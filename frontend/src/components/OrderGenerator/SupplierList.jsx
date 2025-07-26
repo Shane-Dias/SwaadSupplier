@@ -42,23 +42,42 @@ export default function SupplierList({ ingredients, onSupplierSelect }) {
   }
 
   return (
-    <div className="supplier-list">
-      <h3>🏪 Available Suppliers</h3>
-      
-      {Object.entries(ingredients).map(([ingredient, details]) => {
-        const suppliers = suppliersData[ingredient] || [];
-        
-        return (
-          <div key={ingredient} className="supplier-section">
-            <h4>{ingredient.toUpperCase()} ({details.totalQuantity} {details.unit})</h4>
-            
-            {suppliers.length === 0 ? (
-              <p className="no-suppliers">No suppliers available for this ingredient</p>
-            ) : (
-              <div className="supplier-options">
-                {suppliers.map(supplier => (
-                  <div key={supplier.id} className="supplier-card">
-                    <label className="supplier-option">
+    <div className="uniform-tab-content">
+      <div className="tab-header-section">
+        <h3>
+          <span className="header-icon">🏪</span>
+          Select Suppliers
+        </h3>
+        <p>Choose the best suppliers for each ingredient</p>
+      </div>
+
+      <div className="suppliers-container">
+        {Object.entries(ingredients).map(([ingredient, details]) => {
+          const suppliers = suppliersData[ingredient] || [];
+          
+          return (
+            <div key={ingredient} className="supplier-section glass-morphism">
+              <div className="ingredient-header">
+                <h4>{ingredient.toUpperCase()}</h4>
+                <span className="quantity-badge">
+                  {details.totalQuantity} {details.unit}
+                </span>
+              </div>
+              
+              {suppliers.length === 0 ? (
+                <div className="no-suppliers glass-morphism">
+                  <span className="warning-icon">⚠️</span>
+                  No suppliers available for this ingredient
+                </div>
+              ) : (
+                <div className="supplier-grid">
+                  {suppliers.map(supplier => (
+                    <label 
+                      key={supplier.id} 
+                      className={`supplier-card glass-morphism ${
+                        selectedSuppliers[ingredient] === supplier.id ? 'selected' : ''
+                      }`}
+                    >
                       <input 
                         type="radio"
                         name={`supplier-${ingredient}`}
@@ -66,23 +85,35 @@ export default function SupplierList({ ingredients, onSupplierSelect }) {
                         checked={selectedSuppliers[ingredient] === supplier.id}
                         onChange={(e) => handleSupplierChange(ingredient, e.target.value)}
                       />
-                      <div className="supplier-details">
-                        <div className="supplier-name">{supplier.name}</div>
-                        <div className="supplier-info">
-                          <span className="price">₹{supplier.price}/{supplier.unit}</span>
-                          <span className="distance">{supplier.distance}</span>
-                          <span className="rating">⭐ {supplier.rating}</span>
-                          <span className="stock">Stock: {supplier.stock} {supplier.unit}</span>
+                      
+                      <div className="supplier-content">
+                        <div className="supplier-header">
+                          <span className="supplier-name">{supplier.name}</span>
+                          <span className="supplier-rating">
+                            ⭐ {supplier.rating}
+                          </span>
+                        </div>
+                        
+                        <div className="supplier-metrics">
+                          <span className="price-badge">
+                            ₹{supplier.price}/{supplier.unit}
+                          </span>
+                          <span className="distance-badge">
+                            📍 {supplier.distance}
+                          </span>
+                          <span className="stock-badge">
+                            📦 {supplier.stock} {supplier.unit}
+                          </span>
                         </div>
                       </div>
                     </label>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

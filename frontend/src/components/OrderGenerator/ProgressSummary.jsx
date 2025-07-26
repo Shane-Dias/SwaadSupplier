@@ -9,50 +9,50 @@ export default function ProgressSummary({ orderData, selectedSuppliers, totalCos
   const completionPercentage = Math.round((suppliersSelected / totalIngredients) * 100);
 
   return (
-    <div className="progress-summary-compact">
+    <div className="progress-summary glass-morphism">
       <div className="progress-header">
-        <h4>Current Order</h4>
-        <div className="progress-percentage">{completionPercentage}%</div>
+        <h4>Order Progress</h4>
+        <div className="progress-badge">{completionPercentage}%</div>
       </div>
       
       <div className="progress-bar">
         <div 
           className="progress-fill" 
           style={{ width: `${completionPercentage}%` }}
-        ></div>
+        />
       </div>
       
-      <div className="order-info">
-        <div className="info-item">
-          <span className="info-icon">🍽️</span>
-          <div>
-            <div className="info-value">{orderData.dish}</div>
-            <div className="info-label">{orderData.quantity} plates</div>
+      <div className="metrics-grid">
+        <div className="metric-item">
+          <span className="metric-icon">🍽️</span>
+          <div className="metric-content">
+            <div className="metric-value">{orderData.dish}</div>
+            <div className="metric-label">{orderData.quantity} plates</div>
           </div>
         </div>
         
-        <div className="info-item">
-          <span className="info-icon">📦</span>
-          <div>
-            <div className="info-value">{totalIngredients}</div>
-            <div className="info-label">ingredients</div>
+        <div className="metric-item">
+          <span className="metric-icon">📦</span>
+          <div className="metric-content">
+            <div className="metric-value">{totalIngredients}</div>
+            <div className="metric-label">ingredients</div>
           </div>
         </div>
         
-        <div className="info-item">
-          <span className="info-icon">🏪</span>
-          <div>
-            <div className="info-value">{suppliersSelected}/{totalIngredients}</div>
-            <div className="info-label">suppliers</div>
+        <div className="metric-item">
+          <span className="metric-icon">🏪</span>
+          <div className="metric-content">
+            <div className="metric-value">{suppliersSelected}/{totalIngredients}</div>
+            <div className="metric-label">suppliers selected</div>
           </div>
         </div>
         
         {totalCost > 0 && (
-          <div className="info-item total-cost">
-            <span className="info-icon">💰</span>
-            <div>
-              <div className="info-value">₹{totalCost.toLocaleString()}</div>
-              <div className="info-label">estimated</div>
+          <div className="metric-item total-cost">
+            <span className="metric-icon">💰</span>
+            <div className="metric-content">
+              <div className="metric-value">₹{totalCost.toLocaleString()}</div>
+              <div className="metric-label">estimated total</div>
             </div>
           </div>
         )}

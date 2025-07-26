@@ -279,6 +279,10 @@ export default function OrderGeneratorContainer() {
                 <div className="recent-dish">Biryani</div>
                 <div className="recent-details">25 plates • ₹3,200</div>
               </div>
+              <div className="recent-item">
+                <div className="recent-dish">Dal Makhani</div>
+                <div className="recent-details">40 plates • ₹1,680</div>
+              </div>
             </div>
             <button className="view-all-btn">View All Orders</button>
           </div>
