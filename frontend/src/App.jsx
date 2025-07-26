@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
-
+import OrderGeneratorContainer from "./Components/OrderGenerator/OrderGeneratorContainer";
 
 import Home from "./Pages/Home";
 import Marketplace from "./Pages/Marketplace";
@@ -16,6 +16,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/marketplace" element={<Marketplace />} />
+        <Route path="/orders" element={<OrderGeneratorContainer />} />
+        {/* Add more routes as needed */}
       </Routes>
       <Footer />
     </BrowserRouter>
