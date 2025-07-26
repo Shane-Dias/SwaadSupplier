@@ -1,42 +1,102 @@
 // src/components/OrderGenerator/OrderGeneratorContainer.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import Particles, { initParticlesEngine } from "@tsparticles/react";
+import { loadSlim } from "@tsparticles/slim";
 import TabNavigation from './TabNavigation';
 import OrderGeneratorForm from './OrderGeneratorForm';
 import EstimatedMaterialsList from './EstimatedMaterialsList';
 import SupplierList from './SupplierList';
 import OrderCart from './OrderCart';
 import ProgressSummary from './ProgressSummary';
-import './OrderGenerator.css';
 
 export default function OrderGeneratorContainer() {
   const [orderData, setOrderData] = useState(null);
   const [selectedSuppliers, setSelectedSuppliers] = useState({});
   const [suppliersData, setSuppliersData] = useState({});
   const [activeTab, setActiveTab] = useState('generate');
-  const sidebarRef = useRef(null);
+  const [init, setInit] = useState(false);
+  const [isVisible, setIsVisible] = useState({
+    header: false,
+    sidebar: false,
+    content: false,
+  });
 
-  // Auto-adjust sidebar content based on available space
+  // Initialize particles
   useEffect(() => {
-    const adjustSidebarContent = () => {
-      if (sidebarRef.current) {
-        const sidebar = sidebarRef.current;
-        const availableHeight = sidebar.clientHeight;
-        const contentHeight = sidebar.scrollHeight;
-        
-        // If content is less than available space, add more padding to sections
-        if (contentHeight < availableHeight) {
-          sidebar.style.justifyContent = 'space-between';
-        } else {
-          sidebar.style.justifyContent = 'flex-start';
-        }
-      }
-    };
+    initParticlesEngine(async (engine) => {
+      await loadSlim(engine);
+    }).then(() => {
+      setInit(true);
+    });
+  }, []);
 
-    adjustSidebarContent();
-    window.addEventListener('resize', adjustSidebarContent);
-    
-    return () => window.removeEventListener('resize', adjustSidebarContent);
-  }, [orderData, selectedSuppliers]);
+  // Staggered animations
+  useEffect(() => {
+    const timers = [
+      setTimeout(() => setIsVisible(prev => ({ ...prev, header: true })), 200),
+      setTimeout(() => setIsVisible(prev => ({ ...prev, sidebar: true })), 400),
+      setTimeout(() => setIsVisible(prev => ({ ...prev, content: true })), 600),
+    ];
+
+    return () => timers.forEach(timer => clearTimeout(timer));
+  }, []);
+
+  // Particles configuration (lighter version for background)
+  const particlesOptions = useMemo(
+    () => ({
+      background: {
+        color: {
+          value: "transparent",
+        },
+      },
+      fpsLimit: 60,
+      particles: {
+        color: {
+          value: ["#f97316", "#fb923c", "#fdba74", "#fed7aa"],
+        },
+        move: {
+          enable: true,
+          direction: "top",
+          outModes: {
+            default: "out",
+          },
+          random: true,
+          speed: 0.2,
+          straight: false,
+        },
+        number: {
+          density: {
+            enable: true,
+            area: 2000,
+          },
+          value: 50,
+        },
+        opacity: {
+          value: { min: 0.1, max: 0.3 },
+          animation: {
+            enable: true,
+            speed: 0.5,
+            minimumValue: 0.05,
+            sync: false,
+          },
+        },
+        shape: {
+          type: "circle",
+        },
+        size: {
+          value: { min: 1, max: 3 },
+          animation: {
+            enable: true,
+            speed: 1,
+            minimumValue: 0.3,
+            sync: false,
+          },
+        },
+      },
+      detectRetina: true,
+    }),
+    []
+  );
 
   const handleGenerate = (data) => {
     setOrderData(data);
@@ -70,7 +130,6 @@ export default function OrderGeneratorContainer() {
     return Math.ceil(total * 100) / 100;
   };
 
-  // Enhanced tabs with descriptions for stepper navigation
   const tabs = [
     {
       id: 'generate',
@@ -176,164 +235,183 @@ export default function OrderGeneratorContainer() {
     return true;
   };
 
+  const fadeClass = (element) =>
+    `transition-all duration-1000 transform ${
+      isVisible[element]
+        ? "opacity-100 translate-y-0"
+        : "opacity-0 translate-y-10"
+    }`;
+
   return (
-    <div className="app-layout">
+    <div className="min-h-screen w-full bg-gray-900 relative overflow-hidden">
+      {/* Particles Background */}
+      {init && (
+        <Particles className="absolute inset-0 z-0" options={particlesOptions} />
+      )}
+
+      {/* Gradient backgrounds */}
+      <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-red-500/5" />
+      <div className="absolute top-0 left-0 w-96 h-96 rounded-full bg-orange-500/5 blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-red-500/5 blur-3xl" />
+
       {/* Top Header */}
-      <header className="app-header">
-        <div className="brand-section">
-          <h1 className="brand-title">
-            <span className="brand-icon">🌟</span>
-            SwaadSupplier
-          </h1>
-          <p className="brand-subtitle">AI-Powered Order Generator</p>
+      <header className={`relative z-10 px-6 py-4 border-b border-white/10 bg-white/5 backdrop-blur-sm ${fadeClass('header')}`}>
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
+              <span className="text-3xl">🌟</span>
+              <div>
+                <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-red-300">
+                  SwaadSupplier
+                </h1>
+                <p className="text-sm text-white/60">AI-Powered Order Generator</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+            <span className="text-sm text-orange-200/80">Live System</span>
+          </div>
         </div>
       </header>
 
-      <div className="main-layout">
-        {/* Enhanced Sidebar with Fixed Positioning */}
-        <aside className="sidebar" ref={sidebarRef}>
-          {/* Progress Section - Compact */}
-          {orderData && (
-            <ProgressSummary
-              orderData={orderData}
-              selectedSuppliers={selectedSuppliers}
-              totalCost={calculateTotalCost()}
-            />
-          )}
-
-          {/* Enhanced Navigation with Stepper */}
-          <TabNavigation
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            tabs={tabs}
-          />
-
-          {/* Quick Actions */}
-          <div className="sidebar-actions">
+      <div className="relative z-10 flex min-h-[calc(100vh-80px)]">
+        {/* Enhanced Sidebar */}
+        <aside className={`w-80 bg-white/5 backdrop-blur-sm border-r border-white/10 overflow-y-auto ${fadeClass('sidebar')}`}>
+          <div className="p-6 space-y-6">
+            {/* Progress Section */}
             {orderData && (
-              <button
-                className="btn btn-outline new-order-btn"
-                onClick={handleNewOrder}
-                aria-label="Start a new order"
-              >
-                <span>🆕</span>
-                New Order
-              </button>
+              <div className="bg-white/5 rounded-xl p-4 border border-orange-500/20">
+                <ProgressSummary
+                  orderData={orderData}
+                  selectedSuppliers={selectedSuppliers}
+                  totalCost={calculateTotalCost()}
+                />
+              </div>
             )}
-          </div>
 
-          {/* Help Section */}
-          <div className="sidebar-help">
-            <h4>💡 Quick Tips</h4>
-            <div className="help-tips">
-              <div className="tip-item">
-                <span className="tip-icon">⚡</span>
-                <span className="tip-text">
-                  Use our AI to calculate exact ingredients needed
-                </span>
+            {/* Navigation */}
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <TabNavigation
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                tabs={tabs}
+              />
+            </div>
+
+            {/* Quick Actions */}
+            {orderData && (
+              <div className="space-y-3">
+                <button
+                  className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 hover:from-orange-500/30 hover:to-red-500/30 text-orange-200 font-medium transition-all duration-300 transform hover:scale-105"
+                  onClick={handleNewOrder}
+                >
+                  <span className="mr-2">🆕</span>
+                  New Order
+                </button>
               </div>
-              <div className="tip-item">
-                <span className="tip-icon">💰</span>
-                <span className="tip-text">
-                  Compare prices from multiple suppliers automatically
-                </span>
-              </div>
-              <div className="tip-item">
-                <span className="tip-icon">📱</span>
-                <span className="tip-text">
-                  Save orders as templates for faster reordering
-                </span>
-              </div>
-              <div className="tip-item">
-                <span className="tip-icon">🔥</span>
-                <span className="tip-text">
-                  Get real-time price updates from vendors
-                </span>
-              </div>
-              <div className="tip-item">
-                <span className="tip-icon">📊</span>
-                <span className="tip-text">
-                  Track your order history and analytics
-                </span>
+            )}
+
+            {/* Quick Tips */}
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+                <span className="mr-2">💡</span>
+                Quick Tips
+              </h4>
+              <div className="space-y-3">
+                {[
+                  { icon: '⚡', text: 'Use AI to calculate exact ingredients' },
+                  { icon: '💰', text: 'Compare prices automatically' },
+                  { icon: '📱', text: 'Save orders as templates' },
+                  { icon: '🔥', text: 'Get real-time price updates' },
+                ].map((tip, index) => (
+                  <div key={index} className="flex items-start space-x-3 text-sm">
+                    <span className="text-orange-400 mt-0.5">{tip.icon}</span>
+                    <span className="text-white/70">{tip.text}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
 
-          {/* Recent Orders Section */}
-          <div className="sidebar-recent">
-            <h4>📋 Recent Orders</h4>
-            <div className="recent-orders">
-              <div className="recent-item">
-                <div className="recent-dish">Chole Bhature</div>
-                <div className="recent-details">50 plates • ₹2,450</div>
+            {/* Recent Orders */}
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+                <span className="mr-2">📋</span>
+                Recent Orders
+              </h4>
+              <div className="space-y-3">
+                {[
+                  { dish: 'Chole Bhature', details: '50 plates • ₹2,450' },
+                  { dish: 'Pav Bhaji', details: '30 plates • ₹1,890' },
+                  { dish: 'Samosa', details: '100 pieces • ₹1,250' },
+                  { dish: 'Biryani', details: '25 plates • ₹3,200' },
+                ].map((order, index) => (
+                  <div key={index} className="flex justify-between items-center py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer">
+                    <div>
+                      <div className="text-white font-medium text-sm">{order.dish}</div>
+                      <div className="text-white/50 text-xs">{order.details}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="recent-item">
-                <div className="recent-dish">Pav Bhaji</div>
-                <div className="recent-details">30 plates • ₹1,890</div>
-              </div>
-              <div className="recent-item">
-                <div className="recent-dish">Samosa</div>
-                <div className="recent-details">100 pieces • ₹1,250</div>
-              </div>
-              <div className="recent-item">
-                <div className="recent-dish">Biryani</div>
-                <div className="recent-details">25 plates • ₹3,200</div>
-              </div>
-              <div className="recent-item">
-                <div className="recent-dish">Dal Makhani</div>
-                <div className="recent-details">40 plates • ₹1,680</div>
-              </div>
+              <button className="w-full mt-3 px-3 py-2 text-sm text-orange-300 hover:text-orange-200 transition-colors">
+                View All Orders
+              </button>
             </div>
-            <button className="view-all-btn">View All Orders</button>
-          </div>
 
-          {/* Spacer to push support to bottom */}
-          <div className="sidebar-spacer"></div>
-
-          {/* Support Section - Always at bottom */}
-          <div className="sidebar-support">
-            <div className="support-card">
-              <div className="support-header">
-                <span className="support-icon">🎧</span>
-                <span className="support-title">Need Help?</span>
+            {/* Support Section */}
+            <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-xl p-4 border border-orange-500/20">
+              <div className="flex items-center space-x-3 mb-3">
+                <span className="text-2xl">🎧</span>
+                <span className="text-white font-semibold">Need Help?</span>
               </div>
-              <p className="support-text">Get instant support from our team</p>
-              <button className="support-btn">Contact Support</button>
+              <p className="text-white/70 text-sm mb-3">Get instant support from our team</p>
+              <button className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-medium transition-all duration-300 transform hover:scale-105">
+                Contact Support
+              </button>
             </div>
           </div>
         </aside>
         
         {/* Main Content Area */}
-        <main className="main-content">
-          <div className="content-wrapper">
-            {renderMainContent()}
+        <main className={`flex-1 overflow-y-auto ${fadeClass('content')}`}>
+          <div className="p-6 max-w-6xl mx-auto">
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 min-h-[600px]">
+              {renderMainContent()}
+            </div>
           </div>
 
-          {/* Bottom Navigation for Mobile */}
-          <div className="bottom-navigation">
-            {activeTab !== 'generate' && (
-              <button
-                className="btn btn-secondary"
-                onClick={handlePreviousTab}
-                aria-label="Go to previous step"
-              >
-                ← Previous
-              </button>
-            )}
+          {/* Bottom Navigation */}
+          <div className="sticky bottom-0 p-6 bg-gray-900/80 backdrop-blur-sm border-t border-white/10">
+            <div className="flex justify-between items-center max-w-6xl mx-auto">
+              {activeTab !== 'generate' && (
+                <button
+                  className="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium transition-all duration-300"
+                  onClick={handlePreviousTab}
+                >
+                  ← Previous
+                </button>
+              )}
 
-            {activeTab !== 'cart' && activeTab !== 'generate' && (
-              <button
-                className="btn btn-primary"
-                onClick={handleNextTab}
-                disabled={isNextDisabled()}
-                aria-label="Go to next step"
-              >
-                Next →
-              </button>
-            )}
+              <div className="flex-1" />
+
+              {activeTab !== 'cart' && activeTab !== 'generate' && (
+                <button
+                  className="px-6 py-3 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  onClick={handleNextTab}
+                  disabled={isNextDisabled()}
+                >
+                  Next →
+                </button>
+              )}
+            </div>
           </div>
         </main>
       </div>
+
+      {/* Subtle overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 via-transparent to-gray-900/20 pointer-events-none" />
     </div>
   );
 }
