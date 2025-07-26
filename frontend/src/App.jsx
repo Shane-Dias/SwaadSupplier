@@ -6,6 +6,8 @@ import OrderGeneratorContainer from "./components/OrderGenerator/OrderGeneratorC
 
 import Home from "./Pages/Home";
 import Marketplace from "./Pages/Marketplace";
+import Signup from "./Pages/Signup";
+import Login from "./Pages/Login";
 
 
 
@@ -17,6 +19,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/orders" element={<OrderGeneratorContainer />} />
+        <Route path='/signup' element={<Signup/>}/>
+        <Route path="/login" element={<Login/>}/>
         {/* Add more routes as needed */}
       </Routes>
       <Footer />
