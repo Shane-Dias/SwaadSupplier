@@ -10,6 +10,7 @@ import Marketplace from "./Pages/Marketplace";
 import BlockchainTrust from "./Components/BlockchainTrust";
 import Signup from "./Pages/Signup";
 import Login from "./Pages/Login";
+import SupplierInventory from "./Components/Inventory/SupplierInventory";
 
 
 
@@ -22,6 +23,7 @@ function App() {
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/orders" element={<OrderGeneratorContainer />} />
         <Route path="/orders/inventory" element={<InventoryManager />} />
+        <Route path="/supplier/inventory" element={<SupplierInventory />} />
         <Route path='/signup' element={<Signup/>}/>
         <Route path="/login" element={<Login/>}/>
         {/* Add more routes as needed */}

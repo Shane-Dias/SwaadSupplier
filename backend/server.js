@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
+import itemRoutes from "./routes/itemRoutes.js"
 
 // Configure dotenv
 dotenv.config();
@@ -33,6 +34,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use("/api/items", itemRoutes)
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
