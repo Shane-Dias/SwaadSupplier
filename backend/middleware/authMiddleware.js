@@ -18,5 +18,6 @@ export const protectSupplier = async (req, res, next) => {
     next();
   } catch (err) {
     res.status(401).json({ message: "Invalid token" });
+    console.log(err);
   }
 };

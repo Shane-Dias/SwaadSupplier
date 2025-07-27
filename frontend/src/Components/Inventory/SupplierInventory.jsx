@@ -97,6 +97,102 @@ const SupplierDashboard = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
+  // Add these functions after the imports
+  const deleteItem = async (itemId) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/items/${itemId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete item");
+      return data;
+    } catch (err) {
+      console.error("Delete error:", err.message);
+      throw err;
+    }
+  };
+
+  const updateItem = async (itemId, updatedFields) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/items/${itemId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(updatedFields),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update item");
+      return data;
+    } catch (err) {
+      console.error("Update error:", err.message);
+      throw err;
+    }
+  };
+
+  // Add this function after the handleEdit function
+  const handleDelete = async (itemId) => {
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+
+    try {
+      await deleteItem(itemId);
+      setItems(items.filter((item) => item._id !== itemId));
+      setInventory(inventory.filter((inv) => inv.item !== itemId));
+      showNotification("Item deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      showNotification("Failed to delete item", "error");
+    }
+  };
+
+  // Add this function after handleDelete
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    try {
+      const updatedFields = {
+        name: formData.name,
+        category: formData.category,
+        unitType: formData.unitType,
+        pricePerUnit: parseFloat(formData.pricePerUnit),
+        availableQuantity: parseFloat(formData.availableQuantity),
+      };
+
+      await updateItem(editingItem._id, updatedFields);
+
+      // Update local state
+      setItems(
+        items.map((item) =>
+          item._id === editingItem._id ? { ...item, ...updatedFields } : item
+        )
+      );
+
+      setInventory(
+        inventory.map((inv) =>
+          inv.item === editingItem._id
+            ? {
+                ...inv,
+                availableQuantity: parseFloat(formData.availableQuantity),
+              }
+            : inv
+        )
+      );
+
+      showNotification("Item updated successfully!");
+      setShowEditModal(false);
+      resetForm();
+    } catch (error) {
+      console.error("Error updating item:", error);
+      showNotification("Failed to update item", "error");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form submitted with data:", formData);
@@ -351,7 +447,10 @@ const SupplierDashboard = () => {
                   >
                     <Edit3 size={16} />
                   </button>
-                  <button className="text-gray-400 hover:text-orange-400 transition-colors p-2">
+                  <button
+                    onClick={() => handleDelete(item._id)}
+                    className="text-gray-400 hover:text-red-400 transition-colors p-2"
+                  >
                     <Trash size={16} />
                   </button>
                 </div>
@@ -644,7 +743,7 @@ const SupplierDashboard = () => {
             </button>
             <button
               type="submit"
-            //   onClick={}
+              onClick={handleUpdate}
               className="flex-1 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-200 flex items-center justify-center gap-2"
             >
               <Save size={16} />

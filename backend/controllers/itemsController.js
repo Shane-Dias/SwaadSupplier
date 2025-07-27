@@ -56,3 +56,66 @@ export const getAllItemsWithSupplier = async (req, res) => {
     console.log(err);
   }
 };
+
+export const deleteItem = async (req, res) => {
+  try {
+    const supplierId = req.user.id;
+    const itemId = req.params.id;
+
+    const item = await Item.findById(itemId);
+
+    if (!item) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+    console.log("Item Supplier:", item.supplier.toString());
+    console.log("Logged-in Supplier:", supplierId);
+
+    if (item.supplier.toString() !== supplierId) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized to delete this item" });
+    }
+
+    await item.deleteOne();
+
+    res.status(200).json({ message: "Item deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete item" });
+    console.log(err);
+  }
+};
+
+export const updateItem = async (req, res) => {
+  try {
+    const supplierId = req.user.id;
+    const itemId = req.params.id;
+    const updates = req.body;
+
+    const item = await Item.findById(itemId);
+
+    if (!item) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
+    if (item.supplier.toString() !== supplierId) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized to update this item" });
+    }
+
+    // Update fields
+    Object.keys(updates).forEach((key) => {
+      item[key] = updates[key];
+    });
+
+    await item.save();
+
+    res.status(200).json({
+      message: "Item updated successfully",
+      item,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update item" });
+    console.log(err);
+  }
+};
