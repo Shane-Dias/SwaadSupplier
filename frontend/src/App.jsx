@@ -13,9 +13,7 @@ import SupplierOrdersPage from "./page/SupplierOrdersPage.jsx";
 import Support from "./page/Support.jsx";
 import Marketplace from "../src/page/Marketplace.jsx";
 import Signup from "./page/Signup.jsx";
-import BlockchainTrust from "./components/Blockchain.jsx";
-
-
+// import BlockchainTrust from "./components/Blockchain.jsx";
 
 function App() {
   return (
@@ -34,9 +32,9 @@ function App() {
           path="/supplier/inventory/supplier/orders"
           element={<SupplierOrdersPage />}
         />
-        <Route path='/signup' element={<Signup/>}/>
-        <Route path="/login" element={<Login/>}/>
-        <Route path="/support" element={<Support/>}/>
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/support" element={<Support />} />
         {/* Add more routes as needed */}
         <Route path="/community" element={<BlockchainTrust />} />
       </Routes>
