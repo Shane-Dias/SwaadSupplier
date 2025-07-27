@@ -4,16 +4,16 @@ import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import OrderGeneratorContainer from "./generateOrder/OrderGeneratorContainer.jsx";
 import InventoryManager from "./inventory/InventoryManager.jsx";
-import SupplierInventory from "./inventory/SupplierInventory.js";
+import SupplierInventory from "./inventory/SupplierInventory.jsx";
 
 import Home from "./page/Home.jsx";
-import Login from "./page/Login.js";
+import Login from "./page/Login.jsx";
 import VendorOrders from "./page/VendorOrders.jsx";
-import SupplierOrdersPage from "./page/SupplierOrdersPage.js";
-import Support from "./page/Support.js";
-import Marketplace from "../src/page/Marketplace.js";
+import SupplierOrdersPage from "./page/SupplierOrdersPage.jsx";
+import Support from "./page/Support.jsx";
+import Marketplace from "../src/page/Marketplace.jsx";
 import BlockchainTrust from "./components/BlockchainTrust.jsx";
-import Signup from "./page/Signup.js";
+import Signup from "./page/Signup.jsx";
 
 
 
