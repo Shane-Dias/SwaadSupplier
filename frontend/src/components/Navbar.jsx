@@ -190,7 +190,7 @@ const Navbar = () => {
                     </button>
                     <div className="absolute right-0 mt-1 w-48 bg-gray-800 rounded-lg shadow-lg py-1 z-50 hidden group-hover:block">
                       <a
-                        href={userRole === 'vendor' ? '/vendor-dashboard' : '/supplier-dashboard'}
+                        href={userRole === 'vendor' ? '/vendor-dashboard' : '/supplier/inventory'}
                         className="block px-4 py-2 text-gray-200 hover:bg-gray-700"
                       >
                         Dashboard
