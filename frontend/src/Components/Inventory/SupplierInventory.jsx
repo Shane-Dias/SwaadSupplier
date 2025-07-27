@@ -644,7 +644,7 @@ const SupplierDashboard = () => {
             </button>
             <button
               type="submit"
-              onClick={handleSubmit}
+            //   onClick={}
               className="flex-1 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-200 flex items-center justify-center gap-2"
             >
               <Save size={16} />
