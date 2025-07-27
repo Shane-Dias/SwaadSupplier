@@ -125,7 +125,7 @@ A minimal, clean feedback form allowing users to:
 
 ## 📽 Demo Video
 
-🎥 [Watch Demo Video]((https://drive.google.com/drive/folders/14meiS6N_lTxO6VRSeWqIdBFesfxU0GTz?usp=drive_link))
+🎥 [Watch Demo Video](https://drive.google.com/drive/folders/14meiS6N_lTxO6VRSeWqIdBFesfxU0GTz?usp=drive_link)
 
 ## 🔗 Live Demo
 
