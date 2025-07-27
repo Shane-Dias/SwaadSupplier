@@ -83,8 +83,8 @@ const Navbar = () => {
 
   const navItems = [
     "Marketplace",
-    "Suppliers",
-    "Orders", // This will have dropdown functionality
+    // "Suppliers",
+    ...(userRole === 'vendor' ? ["Orders"] : []), // Only show Orders if vendor
     "Community",
     "Support",
     isLoggedIn ? userName : "Login",
@@ -203,7 +203,7 @@ const Navbar = () => {
                       </button>
                     </div>
                   </div>
-                ) : item === "Orders" ? (
+                ) : item === "Orders" && userRole === 'vendor' ? (
                   // Special Orders dropdown handling
                   <div className="relative group">
                     <button
@@ -335,7 +335,7 @@ const Navbar = () => {
                         Logout
                       </button>
                     </>
-                  ) : item === "Orders" ? (
+                  ) : item === "Orders" && userRole === 'vendor' ? (
                     // Mobile Orders dropdown
                     <>
                       <button
