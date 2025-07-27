@@ -11,6 +11,7 @@ const Marketplace = () => {
   const [favorites, setFavorites] = useState([]);
   const [cart, setCart] = useState([]);
   const [init, setInit] = useState(false);
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   // Initialize tsParticles engine
   useEffect(() => {
@@ -128,13 +129,13 @@ const Marketplace = () => {
   ];
 
   const categories = [
-    { id: 'all', name: 'All Categories', icon: '🏪' },
-    { id: 'vegetables', name: 'Vegetables', icon: '🥬' },
+    { id: 'all', name: 'All', icon: '🏪' },
+    { id: 'vegetables', name: 'Veggies', icon: '🥬' },
     { id: 'spices', name: 'Spices', icon: '🌶️' },
-    { id: 'meat', name: 'Meat & Seafood', icon: '🍖' },
+    { id: 'meat', name: 'Meat', icon: '🍖' },
     { id: 'dairy', name: 'Dairy', icon: '🥛' },
-    { id: 'oils', name: 'Oils & Grains', icon: '🫒' },
-    { id: 'snacks', name: 'Ready Ingredients', icon: '🥨' }
+    { id: 'oils', name: 'Oils', icon: '🫒' },
+    { id: 'snacks', name: 'Snacks', icon: '🥨' }
   ];
 
   const locations = [
@@ -415,51 +416,125 @@ const Marketplace = () => {
             />
           </div>
 
-          {/* Category Filters */}
-          <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-hide">
-            {categories.map(category => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg whitespace-nowrap transition-all text-sm font-medium ${
-                  selectedCategory === category.id
-                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/25'
-                    : 'bg-white/5 backdrop-blur-md text-white/60 hover:bg-white/10 hover:text-white/80 border border-white/10'
-                }`}
+          {/* Mobile Filters Button */}
+          <button 
+            onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
+            className="md:hidden flex items-center gap-2 px-3 py-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white/60 hover:text-white/80 text-sm"
+          >
+            <Filter size={16} />
+            <span>Filters ({filteredSuppliers.length} results)</span>
+          </button>
+
+          {/* Mobile Filters Panel */}
+          {isMobileFiltersOpen && (
+            <div className="md:hidden bg-gray-800/95 backdrop-blur-lg p-4 rounded-xl border border-white/10 space-y-3">
+              {/* Category Filters */}
+              <div className="space-y-2">
+                <h3 className="text-white/80 text-sm font-medium">Categories</h3>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map(category => (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(category.id)}
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium ${
+                        selectedCategory === category.id
+                          ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/25'
+                          : 'bg-white/5 backdrop-blur-md text-white/60 hover:bg-white/10 hover:text-white/80 border border-white/10'
+                      }`}
+                    >
+                      <span className="text-sm">{category.icon}</span>
+                      <span>{category.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Additional Filters */}
+              <div className="space-y-2">
+                <h3 className="text-white/80 text-sm font-medium">Location</h3>
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500/50 focus:outline-none"
+                >
+                  {locations.map(location => (
+                    <option key={location.id} value={location.id} className="bg-gray-800 text-white">
+                      {location.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-white/80 text-sm font-medium">Sort By</h3>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500/50 focus:outline-none"
+                >
+                  <option value="rating" className="bg-gray-800 text-white">Best Rated</option>
+                  <option value="deliveryTime" className="bg-gray-800 text-white">Fastest</option>
+                  <option value="minOrder" className="bg-gray-800 text-white">Low Order</option>
+                </select>
+              </div>
+
+              <button 
+                onClick={() => setIsMobileFiltersOpen(false)}
+                className="w-full mt-2 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-medium"
               >
-                <span className="text-sm">{category.icon}</span>
-                <span className="hidden sm:block">{category.name}</span>
+                Apply Filters
               </button>
-            ))}
-          </div>
+            </div>
+          )}
 
-          {/* Additional Filters */}
-          <div className="flex flex-wrap gap-3">
-            <select
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
-              className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500/50 focus:outline-none min-w-0"
-            >
-              {locations.map(location => (
-                <option key={location.id} value={location.id} className="bg-gray-800 text-white">
-                  {location.name}
-                </option>
+          {/* Desktop Filters */}
+          <div className="hidden md:block space-y-3">
+            {/* Category Filters */}
+            <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-hide">
+              {categories.map(category => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg whitespace-nowrap transition-all text-sm font-medium ${
+                    selectedCategory === category.id
+                      ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/25'
+                      : 'bg-white/5 backdrop-blur-md text-white/60 hover:bg-white/10 hover:text-white/80 border border-white/10'
+                  }`}
+                >
+                  <span className="text-sm">{category.icon}</span>
+                  <span>{category.name}</span>
+                </button>
               ))}
-            </select>
+            </div>
 
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500/50 focus:outline-none min-w-0"
-            >
-              <option value="rating" className="bg-gray-800 text-white">Best Rated</option>
-              <option value="deliveryTime" className="bg-gray-800 text-white">Fastest</option>
-              <option value="minOrder" className="bg-gray-800 text-white">Low Order</option>
-            </select>
+            {/* Additional Filters */}
+            <div className="flex flex-wrap gap-3">
+              <select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500/50 focus:outline-none min-w-0"
+              >
+                {locations.map(location => (
+                  <option key={location.id} value={location.id} className="bg-gray-800 text-white">
+                    {location.name}
+                  </option>
+                ))}
+              </select>
 
-            <div className="flex items-center gap-2 text-white/50 text-sm ml-auto bg-white/5 backdrop-blur-md px-3 py-2 rounded-lg border border-white/10">
-              <Filter size={14} />
-              <span>{filteredSuppliers.length} results</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500/50 focus:outline-none min-w-0"
+              >
+                <option value="rating" className="bg-gray-800 text-white">Best Rated</option>
+                <option value="deliveryTime" className="bg-gray-800 text-white">Fastest</option>
+                <option value="minOrder" className="bg-gray-800 text-white">Low Order</option>
+              </select>
+
+              <div className="flex items-center gap-2 text-white/50 text-sm ml-auto bg-white/5 backdrop-blur-md px-3 py-2 rounded-lg border border-white/10">
+                <Filter size={14} />
+                <span>{filteredSuppliers.length} results</span>
+              </div>
             </div>
           </div>
         </div>
@@ -482,7 +557,7 @@ const Marketplace = () => {
       </div>
 
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-gray-900/60 pointer-events-none" />
+      <div className="fixed bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-gray-900 to-transparent pointer-events-none z-20" />
     </div>
   );
 };

@@ -35,7 +35,7 @@ const Login = () => {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
-        navigate(formData.role === 'vendor' ? '/marketplace' : '/marketplace');
+        navigate(formData.role === 'vendor' ? '/' : '/');
       } else {
         setError(data.message || 'Login failed');
       }

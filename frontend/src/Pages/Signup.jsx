@@ -59,7 +59,7 @@ const Signup = () => {
         }
 
         localStorage.setItem('token', data.token);
-        navigate('/marketplace');
+        navigate('/');
       } else {
         const formDataToSend = new FormData();
         Object.keys(formData).forEach(key => {
@@ -84,7 +84,7 @@ const Signup = () => {
         }
 
         localStorage.setItem('token', data.token);
-        navigate('/marketplace');
+        navigate('/');
       }
     } catch (err) {
       setError(err.message || 'An error occurred. Please try again.');

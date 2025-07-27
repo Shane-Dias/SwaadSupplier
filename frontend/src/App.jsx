@@ -13,6 +13,9 @@ import Login from "./Pages/Login";
 import SupplierInventory from "./Components/Inventory/SupplierInventory";
 import VendorOrders from "./Pages/VendorOrders";
 import SupplierOrdersPage from "./Pages/SupplierOrdersPage.jsx";
+import Support from "./Pages/Support.jsx";
+
+
 
 function App() {
   return (
@@ -31,6 +34,9 @@ function App() {
           path="/supplier/inventory/supplier/orders"
           element={<SupplierOrdersPage />}
         />
+        <Route path='/signup' element={<Signup/>}/>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/support" element={<Support/>}/>
         {/* Add more routes as needed */}
         <Route path="/community" element={<BlockchainTrust />} />
       </Routes>
