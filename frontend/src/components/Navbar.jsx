@@ -1,3 +1,4 @@
+// src/Components/Navbar.jsx
 import React, { useState, useEffect } from "react";
 
 const Navbar = () => {
@@ -8,7 +9,11 @@ const Navbar = () => {
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState("");
   const [loading, setLoading] = useState(true);
-  const [tokennew,setTokennew]=useState()
+  const [tokennew, setTokennew] = useState();
+  
+  // New state for Orders dropdown
+  const [isOrdersDropdownOpen, setIsOrdersDropdownOpen] = useState(false);
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 20) {
@@ -26,7 +31,7 @@ const Navbar = () => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchUserData(token);
-      setTokennew(token)
+      setTokennew(token);
     } else {
       setLoading(false);
     }
@@ -66,10 +71,20 @@ const Navbar = () => {
     window.location.href = "/login";
   };
 
+  // Handle Orders dropdown navigation
+  const handleOrdersNavigation = (type) => {
+    if (type === 'ai') {
+      window.location.href = '/orders';
+    } else {
+      window.location.href = '/orders/inventory';
+    }
+    setIsOrdersDropdownOpen(false);
+  };
+
   const navItems = [
     "Marketplace",
     "Suppliers",
-    "Orders",
+    "Orders", // This will have dropdown functionality
     "Community",
     "Support",
     isLoggedIn ? userName : "Login",
@@ -151,7 +166,7 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <ul className="hidden md:flex space-x-3 lg:space-x-6">
             {navItems.map((item) => (
-              <li key={item}>
+              <li key={item} className="relative">
                 {item === userName ? (
                   <div className="relative group">
                     <button
@@ -180,17 +195,80 @@ const Navbar = () => {
                       >
                         Dashboard
                       </a>
-                      {/* <a
-                        href="/profile"
-                        className="block px-4 py-2 text-gray-200 hover:bg-gray-700"
-                      >
-                        Profile
-                      </a> */}
                       <button
                         onClick={handleLogout}
                         className="block w-full text-left px-4 py-2 text-gray-200 hover:bg-gray-700"
                       >
                         Logout
+                      </button>
+                    </div>
+                  </div>
+                ) : item === "Orders" ? (
+                  // Special Orders dropdown handling
+                  <div className="relative group">
+                    <button
+                      className={`
+                        relative py-2 px-3 lg:px-4 rounded-lg transition-all duration-300 flex items-center justify-center
+                        ${
+                          activeItem === "orders" || activeItem.startsWith("orders/")
+                            ? "bg-gradient-to-br from-gray-800 to-gray-900 text-orange-400 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.35),inset_-2px_-2px_5px_rgba(80,80,80,0.05)]"
+                            : "bg-gray-800/80 text-gray-300 shadow-[3px_3px_6px_rgba(0,0,0,0.25),-2px_-2px_5px_rgba(70,70,70,0.05)]"
+                        }
+                        hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-2px_-2px_5px_rgba(70,70,70,0.05)]
+                        overflow-hidden border border-gray-800 hover:border-orange-900/50
+                      `}
+                      onMouseEnter={() => setIsOrdersDropdownOpen(true)}
+                      onMouseLeave={() => setIsOrdersDropdownOpen(false)}
+                    >
+                      <span
+                        className={`
+                          relative z-10 group-hover:text-orange-400 group-hover:drop-shadow-[0_0_5px_rgba(249,115,22,0.6)] 
+                          transition-colors duration-300 text-sm lg:text-base font-medium flex items-center space-x-1
+                        `}
+                      >
+                        <span>{item}</span>
+                        <svg className="w-4 h-4 ml-1 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </span>
+
+                      {(activeItem === "orders" || activeItem.startsWith("orders/")) && (
+                        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-orange-500 to-red-500"></span>
+                      )}
+
+                      <span className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                    </button>
+
+                    {/* Orders Dropdown Menu */}
+                    <div 
+                      className={`absolute left-0 mt-1 w-64 bg-gray-800 rounded-lg shadow-lg py-2 z-50 border border-gray-700 transition-all duration-200 ${
+                        isOrdersDropdownOpen ? 'opacity-100 visible transform translate-y-0' : 'opacity-0 invisible transform -translate-y-2'
+                      }`}
+                      onMouseEnter={() => setIsOrdersDropdownOpen(true)}
+                      onMouseLeave={() => setIsOrdersDropdownOpen(false)}
+                    >
+                      <button
+                        onClick={() => handleOrdersNavigation('ai')}
+                        className="w-full text-left px-4 py-3 text-gray-200 hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10 hover:text-orange-300 transition-all duration-200 flex items-center space-x-3"
+                      >
+                        <span className="text-lg">🤖</span>
+                        <div>
+                          <div className="font-medium">AI Generated Orders</div>
+                          <div className="text-xs text-gray-400">Smart ingredient calculation</div>
+                        </div>
+                      </button>
+                      
+                      <div className="h-px bg-gray-700 mx-2"></div>
+                      
+                      <button
+                        onClick={() => handleOrdersNavigation('manual')}
+                        className="w-full text-left px-4 py-3 text-gray-200 hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10 hover:text-blue-300 transition-all duration-200 flex items-center space-x-3"
+                      >
+                        <span className="text-lg">📦</span>
+                        <div>
+                          <div className="font-medium">Raw Materials Inventory</div>
+                          <div className="text-xs text-gray-400">Choose items manually</div>
+                        </div>
                       </button>
                     </div>
                   </div>
@@ -257,6 +335,31 @@ const Navbar = () => {
                         Logout
                       </button>
                     </>
+                  ) : item === "Orders" ? (
+                    // Mobile Orders dropdown
+                    <>
+                      <button
+                        onClick={() => handleOrdersNavigation('ai')}
+                        className="w-full text-left py-3 px-4 rounded-lg transition-all duration-300 bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30 flex items-center space-x-3"
+                      >
+                        <span className="text-lg">🤖</span>
+                        <div>
+                          <div className="font-medium">AI Generated Orders</div>
+                          <div className="text-xs text-orange-300/70">Smart ingredient calculation</div>
+                        </div>
+                      </button>
+                      
+                      <button
+                        onClick={() => handleOrdersNavigation('manual')}
+                        className="w-full text-left py-3 px-4 rounded-lg transition-all duration-300 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 border border-blue-500/30 flex items-center space-x-3 mt-2"
+                      >
+                        <span className="text-lg">📦</span>
+                        <div>
+                          <div className="font-medium">Manual Item Selection</div>
+                          <div className="text-xs text-blue-300/70">Choose items manually</div>
+                        </div>
+                      </button>
+                    </>
                   ) : (
                     <a
                       href={`/${item.toLowerCase()}`}
@@ -282,22 +385,6 @@ const Navbar = () => {
               ))}
             </ul>
           </div>
-
-          {/* Quick Action Buttons (Desktop only) - Only show when not logged in */}
-          {/* {!isLoggedIn && (
-            <div className="hidden lg:flex items-center space-x-3 ml-6">
-              <a href="/vendor-signup">
-                <button className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-medium rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105">
-                  Join as Vendor
-                </button>
-              </a>
-              <a href="/supplier-signup">
-                <button className="px-4 py-2 bg-transparent border border-orange-500/30 text-orange-300 text-sm font-medium rounded-lg hover:bg-orange-500/10 hover:border-orange-500/50 transition-all duration-300">
-                  Become Supplier
-                </button>
-              </a>
-            </div>
-          )} */}
         </div>
       </nav>
 
