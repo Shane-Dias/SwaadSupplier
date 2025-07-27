@@ -1,12 +1,18 @@
 // src/components/Inventory/ItemsInventory.jsx
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
 import React, { useState, useEffect } from "react";
 
 export default function ItemsInventory() {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isVisible, setIsVisible] = useState(false);
   const [cart, setCart] = useState([]);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -183,6 +189,97 @@ export default function ItemsInventory() {
       </div>
     );
   }
+
+  // Handle order placement
+const handlePlaceOrder = async () => {
+  if (cart.length === 0) {
+    alert('Please add items to cart first');
+    return;
+  }
+
+  setIsPlacingOrder(true);
+
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No authentication token found - please login again');
+    }
+
+    // Verify all items come from the same supplier
+    const firstSupplier = cart[0].supplierId;
+    const mixedSuppliers = cart.some(item => item.supplierId !== firstSupplier);
+    
+    if (mixedSuppliers) {
+      throw new Error('All items in cart must be from the same supplier');
+    }
+
+    const orderData = {
+      supplierName: cart[0].supplier, // Using supplier name from first item
+      items: cart.map(item => ({
+        item: item.id,
+        quantity: item.selectedQuantity
+      })),
+      totalAmount: calculateTotal()
+    };
+
+    const response = await fetch(`${apiUrl}/api/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(orderData)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      // Handle specific error messages from backend
+      if (data.message === 'Supplier not found') {
+        throw new Error(`Supplier "${orderData.supplierName}" not found. Please verify the name.`);
+      }
+      throw new Error(data.message || 'Failed to place order');
+    }
+
+    // Success - show confirmation and clear cart
+    alert(`Order placed successfully! Total: ₹${calculateTotal().toLocaleString()}`);
+    
+    // Reset quantities in items list
+    setItems(prevItems => 
+      prevItems.map(item => ({
+        ...item,
+        selectedQuantity: 0
+      }))
+    );
+    
+    setCart([]); // Clear cart
+    
+    // Redirect to orders history
+    navigate('/orders/history');
+
+  } catch (error) {
+    console.error('Order placement error:', error);
+    
+    // User-friendly error messages
+    let errorMessage = error.message;
+    
+    if (error.message.includes('Failed to fetch')) {
+      errorMessage = 'Network error - please check your connection';
+    } else if (error.message.includes('Unexpected token')) {
+      errorMessage = 'Invalid server response';
+    }
+    
+    alert(`Error: ${errorMessage}`);
+    
+    // Optionally refresh token if unauthorized
+    if (error.message.includes('Unauthorized') || error.message.includes('token')) {
+      localStorage.removeItem('token');
+      navigate('/login');
+    }
+  } finally {
+    setIsPlacingOrder(false);
+  }
+};
 
   return (
     <div
@@ -472,6 +569,13 @@ export default function ItemsInventory() {
                         ₹{calculateTotal().toLocaleString()}
                       </span>
                     </div>
+<<<<<<< HEAD
+                    
+                    <button 
+                      className={`w-full px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${isPlacingOrder ? 'opacity-70 cursor-not-allowed' : ''}`}
+                      onClick={handlePlaceOrder}
+                      disabled={isPlacingOrder}
+=======
 
                     <button
                       className="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
@@ -484,8 +588,17 @@ export default function ItemsInventory() {
                           `Order placed successfully! Total: ₹${calculateTotal().toLocaleString()}`
                         );
                       }}
+>>>>>>> c3f4d0bffefb1b10f8cd657a37047d105be00b4e
                     >
-                      Place Order
+                      {isPlacingOrder ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Placing Order...
+                        </>
+                      ) : 'Place Order'}
                     </button>
                   </div>
                 </div>

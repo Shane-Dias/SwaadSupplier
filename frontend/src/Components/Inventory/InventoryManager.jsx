@@ -1,7 +1,7 @@
 // src/components/Inventory/InventoryManager.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ItemsInventory from './ItemsInventory';
+import ItemsInventory from '../Inventory/ItemsInventory';
 
 export default function InventoryManager() {
   const navigate = useNavigate();
