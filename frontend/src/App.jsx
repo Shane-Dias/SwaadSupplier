@@ -1,16 +1,16 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./Components/Navbar.jsx";
-import Footer from "./Components/Footer.jsx";
+import Navbar from "./components/Navbar.jsx";
+import Footer from "./components/Footer.jsx";
 import OrderGeneratorContainer from "./components/OrderGenerator/OrderGeneratorContainer.jsx";
 import InventoryManager from "./components/Inventory/InventoryManager.jsx";
 
 import Home from "./Pages/Home";
 import Marketplace from "./Pages/Marketplace";
-import BlockchainTrust from "./Components/BlockchainTrust";
+import BlockchainTrust from "./components/BlockchainTrust.jsx";
 import Signup from "./Pages/Signup";
 import Login from "./Pages/Login";
-import SupplierInventory from "./Components/Inventory/SupplierInventory";
+import SupplierInventory from "./components/Inventory/SupplierInventory.jsx";
 import VendorOrders from "./Pages/VendorOrders";
 import SupplierOrdersPage from "./Pages/SupplierOrdersPage.jsx";
 import Support from "./Pages/Support.jsx";
