@@ -12,8 +12,7 @@ import Signup from "./Pages/Signup";
 import Login from "./Pages/Login";
 import SupplierInventory from "./Components/Inventory/SupplierInventory";
 import VendorOrders from "./Pages/VendorOrders";
-
-
+import SupplierOrdersPage from "./Pages/SupplierOrdersPage.jsx";
 
 function App() {
   return (
@@ -25,9 +24,13 @@ function App() {
         <Route path="/orders" element={<OrderGeneratorContainer />} />
         <Route path="/orders/inventory" element={<InventoryManager />} />
         <Route path="/supplier/inventory" element={<SupplierInventory />} />
-        <Route path='/signup' element={<Signup/>}/>
-        <Route path="/login" element={<Login/>}/>
-        <Route path="/vendor-dashboard" element={<VendorOrders/>}/>
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/vendor-dashboard" element={<VendorOrders />} />
+        <Route
+          path="/supplier/inventory/supplier/orders"
+          element={<SupplierOrdersPage />}
+        />
         {/* Add more routes as needed */}
         <Route path="/community" element={<BlockchainTrust />} />
       </Routes>
