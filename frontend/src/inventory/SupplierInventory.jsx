@@ -57,7 +57,7 @@ const SupplierDashboard = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/api/items/my", {
+      const response = await fetch("https://swaadsupplier.onrender.com/api/items/my", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -100,7 +100,7 @@ const SupplierDashboard = () => {
   // Add these functions after the imports
   const deleteItem = async (itemId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/items/${itemId}`, {
+      const res = await fetch(`https://swaadsupplier.onrender.com/api/items/${itemId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -119,7 +119,7 @@ const SupplierDashboard = () => {
 
   const updateItem = async (itemId, updatedFields) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/items/${itemId}`, {
+      const res = await fetch(`https://swaadsupplier.onrender.com/api/items/${itemId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -206,7 +206,7 @@ const SupplierDashboard = () => {
       }
 
       console.log(formData.availableQuantity);
-      const response = await fetch("http://localhost:5000/api/items/add", {
+      const response = await fetch("https://swaadsupplier.onrender.com/api/items/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

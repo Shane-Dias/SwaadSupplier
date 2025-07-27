@@ -10,7 +10,7 @@ const SupplierOrdersPage = () => {
   const fetchSupplierOrders = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/orders/supplier",
+        "https://swaadsupplier.onrender.com/api/orders/supplier",
         {
           method: "GET",
           headers: {
@@ -38,7 +38,7 @@ const SupplierOrdersPage = () => {
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/orders/supplier/update-status/${orderId}`,
+        `https://swaadsupplier.onrender.com/api/orders/supplier/update-status/${orderId}`,
         {
           method: "PUT",
           headers: {

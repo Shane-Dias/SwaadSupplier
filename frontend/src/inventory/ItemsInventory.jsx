@@ -29,7 +29,7 @@ export default function ItemsInventory() {
   const fetchAllItems = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/items/all");
+      const res = await fetch("https://swaadsupplier.onrender.com/api/items/all");
       if (!res.ok) {
         throw new Error("Failed to fetch items");
       }
