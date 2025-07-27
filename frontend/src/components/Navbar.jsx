@@ -4,7 +4,11 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [activeItem, setActiveItem] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [tokennew,setTokennew]=useState()
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 20) {
@@ -18,9 +22,49 @@ const Navbar = () => {
     const path = window.location.pathname.substring(1);
     setActiveItem(path || "home");
 
+    // Check if user is logged in
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetchUserData(token);
+      setTokennew(token)
+    } else {
+      setLoading(false);
+    }
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const fetchUserData = async (token) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setIsLoggedIn(true);
+        setUserName(data.name);
+        setUserRole(data.role);
+      } else {
+        localStorage.removeItem("token");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setUserName("");
+    setUserRole("");
+    window.location.href = "/login";
+  };
 
   const navItems = [
     "Marketplace",
@@ -28,8 +72,27 @@ const Navbar = () => {
     "Orders",
     "Community",
     "Support",
-    "Login",
+    isLoggedIn ? userName : "Login",
   ];
+
+  if (loading) {
+    return (
+      <>
+        <nav className="fixed w-full z-50 bg-gray-900 py-4">
+          <div className="container mx-auto px-4 lg:px-6">
+            <div className="flex justify-between items-center">
+              <div className="text-2xl font-bold">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">
+                  StreetSource
+                </span>
+              </div>
+            </div>
+          </div>
+        </nav>
+        <div className="h-16 md:h-20"></div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -89,35 +152,79 @@ const Navbar = () => {
           <ul className="hidden md:flex space-x-3 lg:space-x-6">
             {navItems.map((item) => (
               <li key={item}>
-                <a
-                  href={`/${item.toLowerCase()}`}
-                  onClick={() => setActiveItem(item.toLowerCase())}
-                  className={`
-                    relative py-2 px-3 lg:px-4 rounded-lg transition-all duration-300 flex items-center justify-center
-                    ${
-                      activeItem === item.toLowerCase()
-                        ? "bg-gradient-to-br from-gray-800 to-gray-900 text-orange-400 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.35),inset_-2px_-2px_5px_rgba(80,80,80,0.05)]"
-                        : "bg-gray-800/80 text-gray-300 shadow-[3px_3px_6px_rgba(0,0,0,0.25),-2px_-2px_5px_rgba(70,70,70,0.05)]"
-                    }
-                    hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-2px_-2px_5px_rgba(70,70,70,0.05)]
-                    overflow-hidden group border border-gray-800 hover:border-orange-900/50
-                  `}
-                >
-                  <span
+                {item === userName ? (
+                  <div className="relative group">
+                    <button
+                      className={`
+                        relative py-2 px-3 lg:px-4 rounded-lg transition-all duration-300 flex items-center justify-center
+                        bg-gradient-to-br from-gray-800 to-gray-900 text-orange-400 
+                        shadow-[inset_3px_3px_6px_rgba(0,0,0,0.35),inset_-2px_-2px_5px_rgba(80,80,80,0.05)]
+                        hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-2px_-2px_5px_rgba(70,70,70,0.05)]
+                        overflow-hidden border border-gray-800 hover:border-orange-900/50
+                      `}
+                    >
+                      <span
+                        className={`
+                          relative z-10 group-hover:text-orange-400 group-hover:drop-shadow-[0_0_5px_rgba(249,115,22,0.6)] 
+                          transition-colors duration-300 text-sm lg:text-base font-medium
+                        `}
+                      >
+                        {item}
+                      </span>
+                      <span className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                    </button>
+                    <div className="absolute right-0 mt-1 w-48 bg-gray-800 rounded-lg shadow-lg py-1 z-50 hidden group-hover:block">
+                      <a
+                        href={userRole === 'vendor' ? '/vendor-dashboard' : '/supplier-dashboard'}
+                        className="block px-4 py-2 text-gray-200 hover:bg-gray-700"
+                      >
+                        Dashboard
+                      </a>
+                      {/* <a
+                        href="/profile"
+                        className="block px-4 py-2 text-gray-200 hover:bg-gray-700"
+                      >
+                        Profile
+                      </a> */}
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-gray-200 hover:bg-gray-700"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <a
+                    href={`/${item.toLowerCase()}`}
+                    onClick={() => setActiveItem(item.toLowerCase())}
                     className={`
-                    relative z-10 group-hover:text-orange-400 group-hover:drop-shadow-[0_0_5px_rgba(249,115,22,0.6)] 
-                    transition-colors duration-300 text-sm lg:text-base font-medium
-                  `}
+                      relative py-2 px-3 lg:px-4 rounded-lg transition-all duration-300 flex items-center justify-center
+                      ${
+                        activeItem === item.toLowerCase()
+                          ? "bg-gradient-to-br from-gray-800 to-gray-900 text-orange-400 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.35),inset_-2px_-2px_5px_rgba(80,80,80,0.05)]"
+                          : "bg-gray-800/80 text-gray-300 shadow-[3px_3px_6px_rgba(0,0,0,0.25),-2px_-2px_5px_rgba(70,70,70,0.05)]"
+                      }
+                      hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-2px_-2px_5px_rgba(70,70,70,0.05)]
+                      overflow-hidden group border border-gray-800 hover:border-orange-900/50
+                    `}
                   >
-                    {item}
-                  </span>
+                    <span
+                      className={`
+                        relative z-10 group-hover:text-orange-400 group-hover:drop-shadow-[0_0_5px_rgba(249,115,22,0.6)] 
+                        transition-colors duration-300 text-sm lg:text-base font-medium
+                      `}
+                    >
+                      {item}
+                    </span>
 
-                  {activeItem === item.toLowerCase() && (
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-orange-500 to-red-500"></span>
-                  )}
+                    {activeItem === item.toLowerCase() && (
+                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-orange-500 to-red-500"></span>
+                    )}
 
-                  <span className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                </a>
+                    <span className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  </a>
+                )}
               </li>
             ))}
           </ul>
@@ -129,43 +236,68 @@ const Navbar = () => {
             <ul className="flex flex-col space-y-2 mt-4 pb-4">
               {navItems.map((item) => (
                 <li key={item}>
-                  <a
-                    href={`/${item.toLowerCase()}`}
-                    onClick={() => {
-                      setActiveItem(item.toLowerCase());
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`
-                      block py-3 px-4 rounded-lg transition-all duration-300
-                      ${
-                        activeItem === item.toLowerCase()
-                          ? "bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30"
-                          : "bg-gray-800/50 text-gray-300 border border-gray-700/50"
-                      }
-                      hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10 
-                      hover:text-orange-300 hover:border-orange-500/20
-                    `}
-                  >
-                    <span className="font-medium">{item}</span>
-                  </a>
+                  {item === userName ? (
+                    <>
+                      <a
+                        href={userRole === 'vendor' ? '/vendor-dashboard' : '/supplier-dashboard'}
+                        className="block py-3 px-4 rounded-lg transition-all duration-300 bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30"
+                      >
+                        Dashboard
+                      </a>
+                      <a
+                        href="/profile"
+                        className="block py-3 px-4 rounded-lg transition-all duration-300 bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30 mt-2"
+                      >
+                        Profile
+                      </a>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full mt-2 py-2 px-4 text-center text-orange-300 hover:bg-orange-500/10 rounded-lg border border-orange-500/30"
+                      >
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <a
+                      href={`/${item.toLowerCase()}`}
+                      onClick={() => {
+                        setActiveItem(item.toLowerCase());
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`
+                        block py-3 px-4 rounded-lg transition-all duration-300
+                        ${
+                          activeItem === item.toLowerCase()
+                            ? "bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30"
+                            : "bg-gray-800/50 text-gray-300 border border-gray-700/50"
+                        }
+                        hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10 
+                        hover:text-orange-300 hover:border-orange-500/20
+                      `}
+                    >
+                      <span className="font-medium">{item}</span>
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Quick Action Buttons (Desktop only) */}
-          <div className="hidden lg:flex items-center space-x-3 ml-6">
-            <a href="/vendor-signup">
-              <button className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-medium rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105">
-                Join as Vendor
-              </button>
-            </a>
-            <a href="/supplier-signup">
-              <button className="px-4 py-2 bg-transparent border border-orange-500/30 text-orange-300 text-sm font-medium rounded-lg hover:bg-orange-500/10 hover:border-orange-500/50 transition-all duration-300">
-                Become Supplier
-              </button>
-            </a>
-          </div>
+          {/* Quick Action Buttons (Desktop only) - Only show when not logged in */}
+          {/* {!isLoggedIn && (
+            <div className="hidden lg:flex items-center space-x-3 ml-6">
+              <a href="/vendor-signup">
+                <button className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-medium rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105">
+                  Join as Vendor
+                </button>
+              </a>
+              <a href="/supplier-signup">
+                <button className="px-4 py-2 bg-transparent border border-orange-500/30 text-orange-300 text-sm font-medium rounded-lg hover:bg-orange-500/10 hover:border-orange-500/50 transition-all duration-300">
+                  Become Supplier
+                </button>
+              </a>
+            </div>
+          )} */}
         </div>
       </nav>
 
