@@ -5,12 +5,13 @@ import Footer from "./Components/Footer.jsx";
 import OrderGeneratorContainer from "./components/OrderGenerator/OrderGeneratorContainer.jsx";
 import InventoryManager from "./components/Inventory/InventoryManager.jsx";
 
-import Home from "./Pages/Home.jsx";
-import Marketplace from "./Pages/Marketplace.jsx";
-import BlockchainTrust from "./Components/BlockchainTrust.jsx";
-import Signup from "./Pages/Signup.jsx";
-import Login from "./Pages/Login.jsx";
-import SupplierInventory from "./Components/Inventory/SupplierInventory.jsx";
+import Home from "./Pages/Home";
+import Marketplace from "./Pages/Marketplace";
+import BlockchainTrust from "./Components/BlockchainTrust";
+import Signup from "./Pages/Signup";
+import Login from "./Pages/Login";
+import SupplierInventory from "./Components/Inventory/SupplierInventory";
+import VendorOrders from "./Pages/VendorOrders";
 
 
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/supplier/inventory" element={<SupplierInventory />} />
         <Route path='/signup' element={<Signup/>}/>
         <Route path="/login" element={<Login/>}/>
+        <Route path="/vendor-dashboard" element={<VendorOrders/>}/>
         {/* Add more routes as needed */}
         <Route path="/community" element={<BlockchainTrust />} />
       </Routes>
