@@ -125,11 +125,11 @@ A minimal, clean feedback form allowing users to:
 
 ## 📽 Demo Video
 
-🎥 [Watch Demo Video](INSERT_YOUTUBE_OR_DRIVE_LINK)
+🎥 [Watch Demo Video]((https://drive.google.com/drive/folders/14meiS6N_lTxO6VRSeWqIdBFesfxU0GTz?usp=drive_link))
 
 ## 🔗 Live Demo
 
-🌐 [Try the Live App](INSERT_DEPLOYED_FRONTEND_LINK)
+🌐 [Try the Live App](https://swaad-supplier.vercel.app/)
 
 ## 🔐 Test Credentials
 
@@ -171,9 +171,9 @@ Use these pre-registered accounts to test the platform:
 
 ## 📣 Submission Checklist
 
-- ✅ Demo Video: [Insert Link]
-- ✅ Live Website: [Insert Link]
-- ✅ GitHub Repo: [Insert Link]
+- ✅ Demo Video: [https://drive.google.com/drive/folders/14meiS6N_lTxO6VRSeWqIdBFesfxU0GTz?usp=drive_link]
+- ✅ Live Website: [https://swaad-supplier.vercel.app/]
+- ✅ GitHub Repo: [https://github.com/Shane-Dias/SwaadSupplier]
 - ✅ Final README: ✅ This File
 
 ## 🙌 Acknowledgements
