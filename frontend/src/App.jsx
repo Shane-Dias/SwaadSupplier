@@ -6,7 +6,7 @@ import OrderGeneratorContainer from "./generateOrder/OrderGeneratorContainer.jsx
 import InventoryManager from "./inventory/InventoryManager.jsx";
 
 import Home from "./page/Home.jsx";
-import Marketplace from "./page/Marketplace.js";
+import Marketplace from "../src/page/Marketplace.js";
 import BlockchainTrust from "./components/BlockchainTrust.jsx";
 import Signup from "./page/Signup.js";
 import Login from "./page/Login.js";
