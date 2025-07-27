@@ -12,6 +12,7 @@ import {
   Check,
   Delete,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SupplierDashboard = () => {
   const [items, setItems] = useState([]);
@@ -22,6 +23,7 @@ const SupplierDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [notification, setNotification] = useState(null);
+  const navigate = useNavigate();
 
   // Form states
   const [formData, setFormData] = useState({
@@ -206,6 +208,14 @@ const SupplierDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 p-6">
+      <button
+        onClick={() => {
+          navigate("supplier/orders");
+        }}
+        className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:from-orange-600 hover:to-red-600 transition-all duration-200 font-medium fixed bottom-4 right-4 z-50 shadow-lg"
+      >
+        View Orders
+      </button>
       {/* Notification */}
       {notification && (
         <div
