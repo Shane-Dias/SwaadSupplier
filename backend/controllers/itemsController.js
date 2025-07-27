@@ -1,4 +1,5 @@
 import Item from "../models/item.js";
+import Supplier from "../models/Supplier.js";
 
 export const addItem = async (req, res) => {
   try {
@@ -40,5 +41,18 @@ export const getMyItems = async (req, res) => {
     res.status(200).json(items);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+export const getAllItemsWithSupplier = async (req, res) => {
+  try {
+    const items = await Item.find()
+      .populate("supplier", "shopName city") // 👈 only show selected fields
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(items);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch items." });
+    console.log(err);
   }
 };
