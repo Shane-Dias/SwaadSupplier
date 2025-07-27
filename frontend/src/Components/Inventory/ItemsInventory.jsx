@@ -1,5 +1,4 @@
 // src/components/Inventory/ItemsInventory.jsx
-import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -569,13 +568,6 @@ const handlePlaceOrder = async () => {
                         ₹{calculateTotal().toLocaleString()}
                       </span>
                     </div>
-<<<<<<< HEAD
-                    
-                    <button 
-                      className={`w-full px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${isPlacingOrder ? 'opacity-70 cursor-not-allowed' : ''}`}
-                      onClick={handlePlaceOrder}
-                      disabled={isPlacingOrder}
-=======
 
                     <button
                       className="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
@@ -588,7 +580,6 @@ const handlePlaceOrder = async () => {
                           `Order placed successfully! Total: ₹${calculateTotal().toLocaleString()}`
                         );
                       }}
->>>>>>> c3f4d0bffefb1b10f8cd657a37047d105be00b4e
                     >
                       {isPlacingOrder ? (
                         <>
