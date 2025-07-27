@@ -6,8 +6,7 @@ import OrderGeneratorContainer from "./components/OrderGenerator/OrderGeneratorC
 
 import Home from "./Pages/Home";
 import Marketplace from "./Pages/Marketplace";
-
-
+import BlockchainTrust from "./Components/BlockchainTrust";
 
 function App() {
   return (
@@ -18,6 +17,7 @@ function App() {
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/orders" element={<OrderGeneratorContainer />} />
         {/* Add more routes as needed */}
+        <Route path="/blockchain" element={<BlockchainTrust />} />
       </Routes>
       <Footer />
     </BrowserRouter>
