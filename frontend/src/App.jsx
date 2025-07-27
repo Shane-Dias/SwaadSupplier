@@ -12,8 +12,8 @@ import VendorOrders from "./page/VendorOrders.jsx";
 import SupplierOrdersPage from "./page/SupplierOrdersPage.jsx";
 import Support from "./page/Support.jsx";
 import Marketplace from "../src/page/Marketplace.jsx";
-import BlockchainTrust from "./components/BlockchainTrust.jsx";
 import Signup from "./page/Signup.jsx";
+import BlockchainTrust from "./components/BlockchainTrust.jsx";
 
 
 
