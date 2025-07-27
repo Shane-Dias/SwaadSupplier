@@ -54,7 +54,7 @@ const Login = () => {
             <a href="/" className="flex items-center gap-2">
               <span className="text-2xl">🍜</span>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.6)]">
-                StreetSource
+                SwaadSupplier
               </span>
             </a>
           </div>

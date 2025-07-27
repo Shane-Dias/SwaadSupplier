@@ -98,28 +98,7 @@ A minimal, clean feedback form allowing users to:
 
 *Market Insights*: Highlights seasonal trends and ingredient cost fluctuations.
 
-## 🏡 Home Page Overview
 
-*"Connect. Source. Grow Together."*
-
-What Users See on the Home Page:
-
-- Welcome banner with mission statement
-- Quick actions to:
-  - Join as a Vendor
-  - Become a Supplier
-- Trust Metrics:
-  - Verified supplier network
-  - Order & cost tracking
-  - Transparent marketplace model
-- Feature List with Icons:
-  - Verified Suppliers
-  - Bulk Discounts & Best Prices
-  - Fast Delivery Network
-  - Smart Inventory Tools
-  - Group Ordering
-  - Quality Assurance
-  - Data-driven Purchase Analysis
 
 ## 💻 Tech Stack
 
@@ -139,11 +118,11 @@ You can add screenshots to the /screenshots folder and embed them here.
 
 | Home Page | Marketplace Page | AI Order Generator |
 |-----------|------------------|-------------------|
-| ![Home](screenshots/home.png) | ![Marketplace](screenshots/marketplace.png) | ![AI Generator](screenshots/ai-generator.png) |
+| ![Home](/screenshots/Screenshot%202025-07-27%20211124.png) | ![Marketplace](/screenshots/Screenshot%202025-07-27%20211226.png) | ![AI Generator](/screenshots/Screenshot%202025-07-27%20211308.png) |
 
 | Blockchain Page | Supplier Signup (FSSAI Upload) | Dashboard |
 |----------------|--------------------------------|-----------|
-| ![Blockchain](screenshots/blockchain.png) | ![FSSAI Upload](screenshots/fssai-upload.png) | ![Dashboard](screenshots/dashboard.png) |
+| ![Blockchain](/screenshots/blockchain1.jpg) | ![FSSAI Upload](/screenshots/blockchain2.jpg) | ![Dashboard](/screenshots/Screenshot%202025-07-27%20211503.png) |
 
 ## 📽 Demo Video
 
@@ -162,9 +141,10 @@ You can add screenshots to the /screenshots folder and embed them here.
 | Name | Role | Contributions |
 |------|------|---------------|
 | Jacell Jamble | Fullstack Developer | AI Order Generator, UI Design, Blockchain Integration |
-| Teammate 2 | Backend Developer | API Development, Order Lifecycle, MongoDB Schemas |
-| Teammate 3 | UI/UX Designer | Application Flow, Responsive Design, Demo Assets |
-| Teammate 4 | Product Lead | Feature Planning, Testing, Pitch, Community Page Logic |
+| Shane Dias | Backend Developer | API Development, Order Lifecycle, MongoDB Schemas |
+| Serene Dmello | Backend Developer | API Development, Order Lifecycle, MongoDB Schemas |
+| Shubham Adhkale | UI/UX Designer | Application Flow, Responsive Design, Demo Assets |
+| Alok Sinha | Product Lead | Feature Planning, Testing, Pitch, Community Page Logic |
 
 ## 🛠 Future Improvements
 

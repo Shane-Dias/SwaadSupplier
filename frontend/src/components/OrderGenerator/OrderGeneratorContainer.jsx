@@ -391,7 +391,7 @@ export default function OrderGeneratorContainer() {
             </div>
 
             {/* Support Section */}
-            <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-xl p-3 md:p-4 border border-orange-500/20">
+            {/* <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-xl p-3 md:p-4 border border-orange-500/20">
               <div className="flex items-center space-x-2 md:space-x-3 mb-2 md:mb-3">
                 <span className="text-xl md:text-2xl">🎧</span>
                 <span className="text-white font-semibold text-sm md:text-base">Need Help?</span>
@@ -400,7 +400,7 @@ export default function OrderGeneratorContainer() {
               <button className="w-full px-3 md:px-4 py-1.5 md:py-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-medium transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
                 Contact Support
               </button>
-            </div>
+            </div> */}
           </div>
         </aside>
         
