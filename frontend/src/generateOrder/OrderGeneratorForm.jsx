@@ -1,6 +1,6 @@
 // src/components/OrderGenerator/OrderGeneratorForm.jsx
 import React, { useState, useEffect } from 'react';
-import { calculateIngredients, getAvailableRecipes } from '../../utils/recipeLogic';
+import { calculateIngredients, getAvailableRecipes } from '../utils/recipeLogic';
 
 export default function OrderGeneratorForm({ onGenerate }) {
   const [dish, setDish] = useState('');

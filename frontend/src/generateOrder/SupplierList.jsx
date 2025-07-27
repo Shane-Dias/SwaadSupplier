@@ -1,6 +1,6 @@
 // src/components/OrderGenerator/SupplierList.jsx
 import React, { useState, useEffect } from 'react';
-import { getSuppliersByIngredient } from '../../utils/supplierData';
+import { getSuppliersByIngredient } from '../utils/supplierData';
 
 export default function SupplierList({ ingredients, onSupplierSelect }) {
   const [selectedSuppliers, setSelectedSuppliers] = useState({});

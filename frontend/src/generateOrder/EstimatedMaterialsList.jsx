@@ -1,6 +1,6 @@
 // src/components/OrderGenerator/EstimatedMaterialsList.jsx
 import React, { useState, useEffect } from 'react';
-import { getCalculationMetadata, isAICalculated } from '../../utils/recipeLogic';
+import { getCalculationMetadata, isAICalculated } from '../utils/recipeLogic';
 
 export default function EstimatedMaterialsList({ ingredients, dish, quantity }) {
   const [isVisible, setIsVisible] = useState({
