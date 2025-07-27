@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
-import React, { useState, useEffect } from "react";
 
 export default function ItemsInventory() {
   const navigate = useNavigate();
@@ -46,6 +45,7 @@ export default function ItemsInventory() {
         unit: item.unitType,
         pricePerUnit: item.pricePerUnit,
         supplier: item.supplier.shopName,
+        supplierId: item.supplier._id,
         location: "N/A", // Not provided in API, using default
       }));
 
@@ -79,6 +79,8 @@ export default function ItemsInventory() {
   const handleQuantityChange = (itemId, quantity) => {
     const numQuantity = parseFloat(quantity) || 0;
     const item = items.find((i) => i.id === itemId);
+
+    if (!item) return;
 
     if (numQuantity > item.availableStock) {
       alert(`Maximum available stock is ${item.availableStock} ${item.unit}`);
@@ -191,95 +193,97 @@ export default function ItemsInventory() {
   }
 
   // Handle order placement
-const handlePlaceOrder = async () => {
-  if (cart.length === 0) {
-    alert('Please add items to cart first');
-    return;
-  }
-
-  setIsPlacingOrder(true);
-
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('No authentication token found - please login again');
+  const handlePlaceOrder = async () => {
+    if (cart.length === 0) {
+      alert('Please add items to cart first');
+      return;
     }
 
-    // Verify all items come from the same supplier
-    const firstSupplier = cart[0].supplierId;
-    const mixedSuppliers = cart.some(item => item.supplierId !== firstSupplier);
-    
-    if (mixedSuppliers) {
-      throw new Error('All items in cart must be from the same supplier');
-    }
+    setIsPlacingOrder(true);
 
-    const orderData = {
-      supplierName: cart[0].supplier, // Using supplier name from first item
-      items: cart.map(item => ({
-        item: item.id,
-        quantity: item.selectedQuantity
-      })),
-      totalAmount: calculateTotal()
-    };
-
-    const response = await fetch(`${apiUrl}/api/orders`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(orderData)
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      // Handle specific error messages from backend
-      if (data.message === 'Supplier not found') {
-        throw new Error(`Supplier "${orderData.supplierName}" not found. Please verify the name.`);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found - please login again');
       }
-      throw new Error(data.message || 'Failed to place order');
-    }
 
-    // Success - show confirmation and clear cart
-    alert(`Order placed successfully! Total: ₹${calculateTotal().toLocaleString()}`);
-    
-    // Reset quantities in items list
-    setItems(prevItems => 
-      prevItems.map(item => ({
-        ...item,
-        selectedQuantity: 0
-      }))
-    );
-    
-    setCart([]); // Clear cart
-    
-    // Redirect to orders history
-    navigate('/orders/history');
+      // Verify all items come from the same supplier
+      const firstSupplierId = cart[0].supplierId;
+      const firstSupplierName = cart[0].supplier;
+      const mixedSuppliers = cart.some(item => item.supplierId !== firstSupplierId);
+      
+      if (mixedSuppliers) {
+        throw new Error('All items in cart must be from the same supplier');
+      }
 
-  } catch (error) {
-    console.error('Order placement error:', error);
-    
-    // User-friendly error messages
-    let errorMessage = error.message;
-    
-    if (error.message.includes('Failed to fetch')) {
-      errorMessage = 'Network error - please check your connection';
-    } else if (error.message.includes('Unexpected token')) {
-      errorMessage = 'Invalid server response';
+      const orderData = {
+        supplierName: firstSupplierName,
+        supplierId: firstSupplierId,
+        items: cart.map(item => ({
+          item: item.id,
+          quantity: item.selectedQuantity
+        })),
+        totalAmount: calculateTotal()
+      };
+
+      const response = await fetch(`${apiUrl}/api/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle specific error messages from backend
+        if (data.message === 'Supplier not found') {
+          throw new Error(`Supplier "${orderData.supplierName}" not found. Please verify the name.`);
+        }
+        throw new Error(data.message || 'Failed to place order');
+      }
+
+      // Success - show confirmation and clear cart
+      alert(`Order placed successfully! Total: ₹${calculateTotal().toLocaleString()}`);
+      
+      // Reset quantities in items list
+      setItems(prevItems => 
+        prevItems.map(item => ({
+          ...item,
+          selectedQuantity: 0
+        }))
+      );
+      
+      setCart([]); // Clear cart
+      
+      // Redirect to orders history
+      navigate('/vendor-dashboard');
+
+    } catch (error) {
+      console.error('Order placement error:', error);
+      
+      // User-friendly error messages
+      let errorMessage = error.message;
+      
+      if (error.message.includes('Failed to fetch')) {
+        errorMessage = 'Network error - please check your connection';
+      } else if (error.message.includes('Unexpected token')) {
+        errorMessage = 'Invalid server response';
+      }
+      
+      alert(`Error: ${errorMessage}`);
+      
+      // Optionally refresh token if unauthorized
+      if (error.message.includes('Unauthorized') || error.message.includes('token')) {
+        localStorage.removeItem('token');
+        navigate('/login');
+      }
+    } finally {
+      setIsPlacingOrder(false);
     }
-    
-    alert(`Error: ${errorMessage}`);
-    
-    // Optionally refresh token if unauthorized
-    if (error.message.includes('Unauthorized') || error.message.includes('token')) {
-      localStorage.removeItem('token');
-      navigate('/login');
-    }
-  } finally {
-    setIsPlacingOrder(false);
-  }
-};
+  };
 
   return (
     <div
@@ -569,26 +573,11 @@ const handlePlaceOrder = async () => {
                         ₹{calculateTotal().toLocaleString()}
                       </span>
                     </div>
-<<<<<<< HEAD
                     
                     <button 
                       className={`w-full px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${isPlacingOrder ? 'opacity-70 cursor-not-allowed' : ''}`}
                       onClick={handlePlaceOrder}
                       disabled={isPlacingOrder}
-=======
-
-                    <button
-                      className="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                      onClick={() => {
-                        if (cart.length === 0) {
-                          alert("Please add items to cart first");
-                          return;
-                        }
-                        alert(
-                          `Order placed successfully! Total: ₹${calculateTotal().toLocaleString()}`
-                        );
-                      }}
->>>>>>> c3f4d0bffefb1b10f8cd657a37047d105be00b4e
                     >
                       {isPlacingOrder ? (
                         <>

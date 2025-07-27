@@ -87,3 +87,94 @@ export const createOrder = async (req, res) => {
     });
   }
 };
+
+
+
+// Get orders for current vendor
+export const getVendorOrders = async (req, res) => {
+  try {
+    // Extract vendor ID from JWT token
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'Authorization token missing' });
+    }
+
+    let vendorId;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      vendorId = decoded.id;
+    } catch (error) {
+      return res.status(401).json({ message: 'Invalid or expired token' });
+    }
+
+    // Fetch orders with populated supplier and items
+    const orders = await Order.find({ vendor: vendorId })
+      .populate({
+        path: 'supplier',
+        select: 'shopName location'
+      })
+      .populate({
+        path: 'items.item',
+        select: 'name category pricePerUnit unitType'
+      })
+      .sort({ orderedAt: -1 }); // Newest first
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Error fetching vendor orders:', error);
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: error.message 
+    });
+  }
+};
+
+// Cancel order
+export const cancelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    // Verify token and get vendor ID
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'Authorization token missing' });
+    }
+
+    let vendorId;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      vendorId = decoded.id;
+    } catch (error) {
+      return res.status(401).json({ message: 'Invalid or expired token' });
+    }
+
+    // Find and update order
+    const order = await Order.findOneAndUpdate(
+      { 
+        _id: orderId, 
+        vendor: vendorId,
+        status: 'pending' // Only pending orders can be cancelled
+      },
+      { status: 'cancelled' },
+      { new: true }
+    ).populate('supplier', 'shopName location')
+     .populate('items.item', 'name category pricePerUnit unitType');
+
+    if (!order) {
+      return res.status(404).json({ 
+        message: 'Order not found or cannot be cancelled' 
+      });
+    }
+
+    res.status(200).json({
+      message: 'Order cancelled successfully',
+      order
+    });
+  } catch (error) {
+    console.error('Error cancelling order:', error);
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: error.message 
+    });
+  }
+};

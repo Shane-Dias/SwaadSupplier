@@ -11,6 +11,7 @@ import BlockchainTrust from "./Components/BlockchainTrust";
 import Signup from "./Pages/Signup";
 import Login from "./Pages/Login";
 import SupplierInventory from "./Components/Inventory/SupplierInventory";
+import VendorOrders from "./Pages/VendorOrders";
 
 
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/supplier/inventory" element={<SupplierInventory />} />
         <Route path='/signup' element={<Signup/>}/>
         <Route path="/login" element={<Login/>}/>
+        <Route path="/vendor-dashboard" element={<VendorOrders/>}/>
         {/* Add more routes as needed */}
         <Route path="/community" element={<BlockchainTrust />} />
       </Routes>
