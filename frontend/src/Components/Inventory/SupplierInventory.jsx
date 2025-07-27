@@ -45,59 +45,49 @@ const SupplierDashboard = () => {
   ];
   const unitTypes = ["kg", "litre", "piece", "dozen", "gram", "ml"];
 
-  // Mock data - replace with API calls
+  const fetchMyItems = async () => {
+    try {
+      //   setLoading(true);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        showNotification("Please log in to continue", "error");
+        return;
+      }
+
+      const response = await fetch("http://localhost:5000/api/items/my", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch items");
+      }
+
+      const data = await response.json();
+      setItems(data);
+
+      // Create inventory data from items (assuming availableQuantity is part of item data)
+      const inventoryData = data.map((item) => ({
+        _id: item._id + "_inv",
+        item: item._id,
+        availableQuantity: item.availableQuantity || 0,
+        lastUpdated: new Date().toISOString(),
+      }));
+      setInventory(inventoryData);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+      showNotification("Failed to load items", "error");
+    } finally {
+      //   setLoading(false);
+    }
+  };
+
+  // Load data on component mount
   useEffect(() => {
-    // Simulate fetching data
-    const mockItems = [
-      {
-        _id: "1",
-        name: "Tomatoes",
-        category: "vegetables",
-        unitType: "kg",
-        pricePerUnit: 40,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        _id: "2",
-        name: "Turmeric Powder",
-        category: "spices",
-        unitType: "kg",
-        pricePerUnit: 200,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        _id: "3",
-        name: "Basmati Rice",
-        category: "grains",
-        unitType: "kg",
-        pricePerUnit: 120,
-        createdAt: new Date().toISOString(),
-      },
-    ];
-
-    const mockInventory = [
-      {
-        _id: "1",
-        item: "1",
-        availableQuantity: 500,
-        lastUpdated: new Date().toISOString(),
-      },
-      {
-        _id: "2",
-        item: "2",
-        availableQuantity: 50,
-        lastUpdated: new Date().toISOString(),
-      },
-      {
-        _id: "3",
-        item: "3",
-        availableQuantity: 200,
-        lastUpdated: new Date().toISOString(),
-      },
-    ];
-
-    setItems(mockItems);
-    setInventory(mockInventory);
+    fetchMyItems();
   }, []);
 
   const showNotification = (message, type = "success") => {
@@ -377,13 +367,6 @@ const SupplierDashboard = () => {
                     </span>
                   </div>
                 </div>
-
-                {isLowStock && (
-                  <div className="flex items-center gap-2 text-red-400 text-sm">
-                    <AlertCircle size={14} />
-                    Low Stock Alert
-                  </div>
-                )}
               </div>
             );
           })}

@@ -3,7 +3,8 @@ import Item from "../models/item.js";
 export const addItem = async (req, res) => {
   try {
     const supplierId = req.user.id;
-    const { name, category, unitType, pricePerUnit,availableQuantity  } = req.body;
+    const { name, category, unitType, pricePerUnit, availableQuantity } =
+      req.body;
 
     const populatedItem = await Item.create({
       name,
@@ -26,5 +27,18 @@ export const addItem = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
     console.log(err);
+  }
+};
+
+export const getMyItems = async (req, res) => {
+  try {
+    const supplierId = req.user.id;
+    const items = await Item.find({ supplier: supplierId }).sort({
+      createdAt: -1,
+    });
+
+    res.status(200).json(items);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
