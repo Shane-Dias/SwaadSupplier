@@ -36,7 +36,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/support" element={<Support />} />
         {/* Add more routes as needed */}
-        <Route path="/community" element={<BlockchainTrust />} />
+        {/* <Route path="/community" element={<BlockchainTrust />} /> */}
       </Routes>
       <Footer />
     </BrowserRouter>
