@@ -2,18 +2,18 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
-import OrderGeneratorContainer from "./components/OrderGenerator/OrderGeneratorContainer.jsx";
-import InventoryManager from "./components/Inventory/InventoryManager.jsx";
+import OrderGeneratorContainer from "./components/orderGenerator/OrderGeneratorContainer.jsx";
+import InventoryManager from "./components/inventory/InventoryManager.jsx";
 
-import Home from "./Pages/Home";
-import Marketplace from "./Pages/Marketplace";
+import Home from "./pages/Home.jsx";
+import Marketplace from "./pages/Marketplace.jsx";
 import BlockchainTrust from "./components/BlockchainTrust.jsx";
-import Signup from "./Pages/Signup";
-import Login from "./Pages/Login";
-import SupplierInventory from "./components/Inventory/SupplierInventory.jsx";
-import VendorOrders from "./Pages/VendorOrders";
-import SupplierOrdersPage from "./Pages/SupplierOrdersPage.jsx";
-import Support from "./Pages/Support.jsx";
+import Signup from "./pages/Signup.jsx";
+import Login from "./pages/Login.jsx";
+import SupplierInventory from "./components/inventory/SupplierInventory.jsx";
+import VendorOrders from "./pages/VendorOrders.jsx";
+import SupplierOrdersPage from "./pages/SupplierOrdersPage.jsx";
+import Support from "./pages/Support.jsx";
 
 
 
