@@ -114,7 +114,6 @@ A minimal, clean feedback form allowing users to:
 
 ## 📸 Screenshots
 
-You can add screenshots to the /screenshots folder and embed them here.
 
 | Home Page | Marketplace Page | AI Order Generator |
 |-----------|------------------|-------------------|
