@@ -5,15 +5,15 @@ import Footer from "./components/Footer.jsx";
 import OrderGeneratorContainer from "./generateOrder/OrderGeneratorContainer.jsx";
 import InventoryManager from "./inventory/InventoryManager.jsx";
 
-import Home from "./pages/Home.jsx";
-import Marketplace from "./pages/Marketplace.jsx";
+import Home from "./page/Home.jsx";
+import Marketplace from "./page/Marketplace.js";
 import BlockchainTrust from "./components/BlockchainTrust.jsx";
-import Signup from "./pages/Signup.jsx";
-import Login from "./pages/Login.jsx";
+import Signup from "./page/Signup.js";
+import Login from "./page/Login.js";
 import SupplierInventory from "./inventory/SupplierInventory.js";
-import VendorOrders from "./pages/VendorOrders.jsx";
-import SupplierOrdersPage from "./pages/SupplierOrdersPage.jsx";
-import Support from "./pages/Support.jsx";
+import VendorOrders from "./page/VendorOrders.jsx";
+import SupplierOrdersPage from "./page/SupplierOrdersPage.js";
+import Support from "./page/Support.js";
 
 
 
