@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
-import Supplier from "../models/Supplier.js";
+import Supplier from "../models/supplier.js"
+// import Supplier from "../models/Supplier";
 
 export const protectSupplier = async (req, res, next) => {
   try {
