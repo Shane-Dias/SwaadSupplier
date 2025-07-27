@@ -13,6 +13,7 @@ const Navbar = () => {
   
   // New state for Orders dropdown
   const [isOrdersDropdownOpen, setIsOrdersDropdownOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,11 +80,11 @@ const Navbar = () => {
       window.location.href = '/orders/inventory';
     }
     setIsOrdersDropdownOpen(false);
+    setIsMobileMenuOpen(false);
   };
 
   const navItems = [
     "Marketplace",
-    // "Suppliers",
     ...(userRole === 'vendor' ? ["Orders"] : []), // Only show Orders if vendor
     "Community",
     "Support",
@@ -93,12 +94,12 @@ const Navbar = () => {
   if (loading) {
     return (
       <>
-        <nav className="fixed w-full z-50 bg-gray-900 py-4">
+        <nav className="fixed w-full z-50 bg-gray-900/90 backdrop-blur-sm py-4">
           <div className="container mx-auto px-4 lg:px-6">
             <div className="flex justify-between items-center">
               <div className="text-2xl font-bold">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">
-                  StreetSource
+                  SwaadSupplier
                 </span>
               </div>
             </div>
@@ -116,18 +117,18 @@ const Navbar = () => {
         fixed w-full z-50 transition-all duration-300
         ${
           scrolled
-            ? "bg-gray-900/95 backdrop-blur-sm shadow-lg py-2"
-            : "bg-gray-900 py-4"
+            ? "bg-gray-900/90 backdrop-blur-sm shadow-lg py-2"
+            : "bg-gray-900/90 backdrop-blur-sm py-4"
         }
       `}
       >
-        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center px-4 lg:px-6">
+        <div className="container mx-auto flex flex-col   md:flex-row justify-between items-center px-4 lg:px-6">
           <div className="flex items-center justify-between w-full md:w-auto mb-4 md:mb-0">
             <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 py-2 px-4 rounded-xl shadow-[5px_5px_15px_rgba(0,0,0,0.4),-5px_-5px_15px_rgba(70,70,70,0.1)] border-t border-l border-gray-700">
               <a href="/" className="flex items-center gap-2">
                 <span className="text-2xl">🍜</span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.6)]">
-                  StreetSource
+                  SwaadSupplier
                 </span>
               </a>
             </div>
@@ -168,7 +169,11 @@ const Navbar = () => {
             {navItems.map((item) => (
               <li key={item} className="relative">
                 {item === userName ? (
-                  <div className="relative group">
+                  <div 
+                    className="relative group"
+                    onMouseEnter={() => setIsProfileDropdownOpen(true)}
+                    onMouseLeave={() => setIsProfileDropdownOpen(false)}
+                  >
                     <button
                       className={`
                         relative py-2 px-3 lg:px-4 rounded-lg transition-all duration-300 flex items-center justify-center
@@ -188,16 +193,18 @@ const Navbar = () => {
                       </span>
                       <span className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                     </button>
-                    <div className="absolute right-0 mt-1 w-48 bg-gray-800 rounded-lg shadow-lg py-1 z-50 hidden group-hover:block">
+                    <div className={`absolute right-0 mt-1 w-48 bg-gray-800/95 backdrop-blur-sm rounded-lg shadow-lg py-1 z-50 border border-gray-700 transition-all duration-200 ${
+                      isProfileDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-1'
+                    }`}>
                       <a
                         href={userRole === 'vendor' ? '/vendor-dashboard' : '/supplier/inventory'}
-                        className="block px-4 py-2 text-gray-200 hover:bg-gray-700"
+                        className="block px-4 py-2 text-gray-200 hover:bg-gray-700/50 transition-colors duration-200"
                       >
                         Dashboard
                       </a>
                       <button
                         onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-gray-200 hover:bg-gray-700"
+                        className="block w-full text-left font-bold hover:font-extrabold px-4 py-2 text-red-500 hover:text-red-700/95 transition-colors duration-200"
                       >
                         Logout
                       </button>
@@ -241,7 +248,7 @@ const Navbar = () => {
 
                     {/* Orders Dropdown Menu */}
                     <div 
-                      className={`absolute left-0 mt-1 w-64 bg-gray-800 rounded-lg shadow-lg py-2 z-50 border border-gray-700 transition-all duration-200 ${
+                      className={`absolute left-0 mt-1 w-64 bg-gray-800/95 backdrop-blur-sm rounded-lg shadow-lg py-2 z-50 border border-gray-700 transition-all duration-200 ${
                         isOrdersDropdownOpen ? 'opacity-100 visible transform translate-y-0' : 'opacity-0 invisible transform -translate-y-2'
                       }`}
                       onMouseEnter={() => setIsOrdersDropdownOpen(true)}
@@ -309,57 +316,63 @@ const Navbar = () => {
 
           {/* Mobile Navigation */}
           <div className={`md:hidden w-full transition-all duration-300 overflow-hidden ${
-            isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+            isMobileMenuOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
           }`}>
             <ul className="flex flex-col space-y-2 mt-4 pb-4">
               {navItems.map((item) => (
                 <li key={item}>
                   {item === userName ? (
-                    <>
+                    <div className="space-y-2">
+                      <div className="py-3 px-4 rounded-lg bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30 font-medium">
+                        {userName}
+                      </div>
                       <a
-                        href={userRole === 'vendor' ? '/vendor-dashboard' : '/supplier-dashboard'}
-                        className="block py-3 px-4 rounded-lg transition-all duration-300 bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30"
+                        href={userRole === 'vendor' ? '/vendor-dashboard' : '/supplier/inventory'}
+                        className="block py-2 px-6 rounded-lg transition-all duration-300 text-gray-300 hover:bg-gray-800/50 hover:text-orange-300"
                       >
                         Dashboard
                       </a>
-                      <a
+                      {/* <a
                         href="/profile"
-                        className="block py-3 px-4 rounded-lg transition-all duration-300 bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30 mt-2"
+                        className="block py-2 px-6 rounded-lg transition-all duration-300 text-gray-300 hover:bg-gray-800/50 hover:text-orange-300"
                       >
                         Profile
-                      </a>
+                      </a> */}
                       <button
                         onClick={handleLogout}
-                        className="w-full mt-2 py-2 px-4 text-center text-orange-300 hover:bg-orange-500/10 rounded-lg border border-orange-500/30"
+                        className="w-full text-left py-2 px-6 rounded-lg font-bold transition-all duration-300 text-red-500 hover:bg-gray-800/50 hover:text-red-700"
                       >
                         Logout
                       </button>
-                    </>
+                    </div>
                   ) : item === "Orders" && userRole === 'vendor' ? (
                     // Mobile Orders dropdown
-                    <>
+                    <div className="space-y-2">
+                      <div className="py-3 px-4 rounded-lg bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30 font-medium">
+                        Orders
+                      </div>
                       <button
                         onClick={() => handleOrdersNavigation('ai')}
-                        className="w-full text-left py-3 px-4 rounded-lg transition-all duration-300 bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30 flex items-center space-x-3"
+                        className="w-full text-left py-2 px-6 rounded-lg transition-all duration-300 text-gray-300 hover:bg-gray-800/50 hover:text-orange-300 flex items-center space-x-3"
                       >
                         <span className="text-lg">🤖</span>
                         <div>
                           <div className="font-medium">AI Generated Orders</div>
-                          <div className="text-xs text-orange-300/70">Smart ingredient calculation</div>
+                          <div className="text-xs text-gray-400">Smart ingredient calculation</div>
                         </div>
                       </button>
                       
                       <button
                         onClick={() => handleOrdersNavigation('manual')}
-                        className="w-full text-left py-3 px-4 rounded-lg transition-all duration-300 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 border border-blue-500/30 flex items-center space-x-3 mt-2"
+                        className="w-full text-left py-2 px-6 rounded-lg transition-all duration-300 text-gray-300 hover:bg-gray-800/50 hover:text-blue-300 flex items-center space-x-3"
                       >
                         <span className="text-lg">📦</span>
                         <div>
                           <div className="font-medium">Manual Item Selection</div>
-                          <div className="text-xs text-blue-300/70">Choose items manually</div>
+                          <div className="text-xs text-gray-400">Choose items manually</div>
                         </div>
                       </button>
-                    </>
+                    </div>
                   ) : (
                     <a
                       href={`/${item.toLowerCase()}`}

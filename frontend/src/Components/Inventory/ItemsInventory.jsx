@@ -1,5 +1,6 @@
 // src/components/Inventory/ItemsInventory.jsx
 import { useNavigate } from 'react-router-dom';
+import { useState,useEffect } from 'react';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 

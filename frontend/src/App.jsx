@@ -12,6 +12,7 @@ import Signup from "./Pages/Signup";
 import Login from "./Pages/Login";
 import SupplierInventory from "./Components/Inventory/SupplierInventory";
 import VendorOrders from "./Pages/VendorOrders";
+import Support from "./Pages/Support.jsx";
 
 
 
@@ -28,6 +29,7 @@ function App() {
         <Route path='/signup' element={<Signup/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/vendor-dashboard" element={<VendorOrders/>}/>
+        <Route path="/support" element={<Support/>}/>
         {/* Add more routes as needed */}
         <Route path="/community" element={<BlockchainTrust />} />
       </Routes>

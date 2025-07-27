@@ -90,7 +90,7 @@ const Footer = () => {
             <div className="mb-3">
               <div className="text-xl font-bold bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm py-1.5 px-3 rounded-lg shadow-[3px_3px_10px_rgba(0,0,0,0.4),-3px_-3px_10px_rgba(70,70,70,0.1)] border border-white/10 inline-block">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500 drop-shadow-[0_0_6px_rgba(251,146,60,0.6)]">
-                   StreetSource
+                  SwaadSupplier
                 </span>
               </div>
             </div>
@@ -137,7 +137,7 @@ const Footer = () => {
         {/* Copyright - More compact */}
         <div className="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center">
           <p className="text-gray-400 text-xs mb-3 sm:mb-0">
-            &copy; {currentYear} Nexus Marketplace. All rights reserved. | Made with ❤️ in Mumbai
+            &copy; {currentYear} Team <span className='font-bold text-white'>Error999</span>  . All rights reserved. | Made with ❤️ in Mumbai
           </p>
           <div className="flex space-x-4">
             <a href="/privacy" className="text-gray-400 hover:text-orange-400 transition-colors duration-300 text-xs">

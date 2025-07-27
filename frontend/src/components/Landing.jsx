@@ -197,12 +197,12 @@ const StreetFoodLandingPage = () => {
               "buttons"
             )}`}
           >
-            <a href="/vendor-signup">
+            <a href="/signup">
               <button className="px-8 py-4 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                 Join as Vendor
               </button>
             </a>
-            <a href="/supplier-signup">
+            <a href="/signup">
               <button className="px-8 py-4 rounded-lg bg-transparent border-2 border-orange-500/30 hover:bg-orange-500/10 hover:border-orange-500/50 text-orange-200 font-semibold transition-all duration-300">
                 Become Supplier
               </button>
