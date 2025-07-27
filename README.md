@@ -131,6 +131,21 @@ A minimal, clean feedback form allowing users to:
 
 🌐 [Try the Live App](INSERT_DEPLOYED_FRONTEND_LINK)
 
+## 🔐 Test Credentials
+
+Use these pre-registered accounts to test the platform:
+
+**Vendor Accounts:**
+- Email: `raju123@gmail.com` | Password: `raju123`
+- Email: `shane123@gmail.com` | Password: `shane123` 
+- Email: `xyz@gmail.com` | Password: `123456`
+
+**Supplier Accounts:**
+- Email: `jacell@gmail.com` | Password: `jacell123`
+- Email: `serene@gmail.com` | Password: `123456`
+
+> ℹ️ Please don't modify account details. These are for testing purposes only.
+
 ## 📁 GitHub Repository
 
 🛠 [View the Full Source Code](INSERT_GITHUB_URL)
