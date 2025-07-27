@@ -25,7 +25,7 @@ function App() {
         <Route path='/signup' element={<Signup/>}/>
         <Route path="/login" element={<Login/>}/>
         {/* Add more routes as needed */}
-        <Route path="/blockchain" element={<BlockchainTrust />} />
+        <Route path="/community" element={<BlockchainTrust />} />
       </Routes>
       <Footer />
     </BrowserRouter>
