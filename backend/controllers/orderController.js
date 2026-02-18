@@ -40,29 +40,36 @@ export const createOrder = async (req, res) => {
     //   });
     // }
 
-    // 4. Validate items
+    // 4. Validate items and check stock
     const itemValidations = await Promise.all(
-      items.map(async (item) => {
-        const foundItem = await Item.findById(item.item);
+      items.map(async (orderItem) => {
+        const foundItem = await Item.findById(orderItem.item);
         if (!foundItem) {
-          return { valid: false, itemId: item.item };
+          return { valid: false, reason: 'Item not found', itemId: orderItem.item };
         }
-        return { valid: true, item: foundItem };
+        if (foundItem.availableQuantity < orderItem.quantity) {
+          return {
+            valid: false,
+            reason: `Insufficient stock for ${foundItem.name}. Available: ${foundItem.availableQuantity}`,
+            itemId: orderItem.item
+          };
+        }
+        return { valid: true, item: foundItem, orderQuantity: orderItem.quantity };
       })
     );
 
-    // const invalidItems = itemValidations.filter(v => !v.valid);
-    // if (invalidItems.length > 0) {
-    //   return res.status(400).json({
-    //     message: 'Some items not found',
-    //     invalidItems: invalidItems.map(i => i.itemId)
-    //   });
-    // }
+    const invalidItems = itemValidations.filter(v => !v.valid);
+    if (invalidItems.length > 0) {
+      return res.status(400).json({
+        message: 'Order validation failed',
+        details: invalidItems.map(i => i.reason)
+      });
+    }
 
     // 5. Create new order
     const order = new Order({
       vendor: vendorId,
-      supplier: supplier._id, // Use the found supplier's ID
+      supplier: supplier._id,
       items: items.map((item) => ({
         item: item.item,
         quantity: item.quantity,
@@ -72,6 +79,15 @@ export const createOrder = async (req, res) => {
     });
 
     const savedOrder = await order.save();
+
+    // 6. Update inventory (Deduct stock)
+    await Promise.all(
+      items.map(async (orderItem) => {
+        await Item.findByIdAndUpdate(orderItem.item, {
+          $inc: { availableQuantity: -orderItem.quantity }
+        });
+      })
+    );
 
     res.status(201).json({
       message: "Order created successfully",

@@ -49,7 +49,6 @@ const SupplierDashboard = () => {
 
   const fetchMyItems = async () => {
     try {
-      //   setLoading(true);
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -57,7 +56,8 @@ const SupplierDashboard = () => {
         return;
       }
 
-      const response = await fetch("https://swaadsupplier.onrender.com/api/items/my", {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+      const response = await fetch(`${apiUrl}/api/items/my`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -71,7 +71,6 @@ const SupplierDashboard = () => {
       const data = await response.json();
       setItems(data);
 
-      // Create inventory data from items (assuming availableQuantity is part of item data)
       const inventoryData = data.map((item) => ({
         _id: item._id + "_inv",
         item: item._id,
@@ -82,8 +81,6 @@ const SupplierDashboard = () => {
     } catch (error) {
       console.error("Error fetching items:", error);
       showNotification("Failed to load items", "error");
-    } finally {
-      //   setLoading(false);
     }
   };
 
@@ -100,7 +97,8 @@ const SupplierDashboard = () => {
   // Add these functions after the imports
   const deleteItem = async (itemId) => {
     try {
-      const res = await fetch(`https://swaadsupplier.onrender.com/api/items/${itemId}`, {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+      const res = await fetch(`${apiUrl}/api/items/${itemId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -119,7 +117,8 @@ const SupplierDashboard = () => {
 
   const updateItem = async (itemId, updatedFields) => {
     try {
-      const res = await fetch(`https://swaadsupplier.onrender.com/api/items/${itemId}`, {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+      const res = await fetch(`${apiUrl}/api/items/${itemId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -177,9 +176,9 @@ const SupplierDashboard = () => {
         inventory.map((inv) =>
           inv.item === editingItem._id
             ? {
-                ...inv,
-                availableQuantity: parseFloat(formData.availableQuantity),
-              }
+              ...inv,
+              availableQuantity: parseFloat(formData.availableQuantity),
+            }
             : inv
         )
       );
@@ -206,7 +205,8 @@ const SupplierDashboard = () => {
       }
 
       console.log(formData.availableQuantity);
-      const response = await fetch("https://swaadsupplier.onrender.com/api/items/add", {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+      const response = await fetch(`${apiUrl}/api/items/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -315,11 +315,10 @@ const SupplierDashboard = () => {
       {/* Notification */}
       {notification && (
         <div
-          className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg flex items-center gap-2 ${
-            notification.type === "success"
-              ? "bg-green-600 text-white"
-              : "bg-red-600 text-white"
-          }`}
+          className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg flex items-center gap-2 ${notification.type === "success"
+            ? "bg-green-600 text-white"
+            : "bg-red-600 text-white"
+            }`}
         >
           {notification.type === "success" ? (
             <Check size={16} />
@@ -370,7 +369,7 @@ const SupplierDashboard = () => {
               <div>
                 <p className="text-gray-400 text-sm">Low Stock Items</p>
                 <p className="text-2xl font-bold text-white">
-                  {inventory.filter((inv) => inv.availableQuantity < 50).length}
+                  {inventory.filter((inv) => inv.availableQuantity < 20).length}
                 </p>
               </div>
               <AlertCircle className="text-red-400" size={24} />
@@ -425,7 +424,7 @@ const SupplierDashboard = () => {
           {filteredItems.map((item) => {
             const itemInventory = getItemInventory(item._id);
             const isLowStock =
-              itemInventory && itemInventory.availableQuantity < 50;
+              itemInventory && itemInventory.availableQuantity < 20;
 
             return (
               <div
@@ -467,9 +466,8 @@ const SupplierDashboard = () => {
                   <div className="flex justify-between">
                     <span className="text-gray-400">Available:</span>
                     <span
-                      className={`font-medium ${
-                        isLowStock ? "text-red-400" : "text-green-400"
-                      }`}
+                      className={`font-medium ${isLowStock ? "text-red-400" : "text-green-400"
+                        }`}
                     >
                       {itemInventory ? itemInventory.availableQuantity : 0}{" "}
                       {item.unitType}

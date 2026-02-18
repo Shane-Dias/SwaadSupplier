@@ -17,7 +17,7 @@ const itemSchema = new mongoose.Schema(
     },
     unitType: {
       type: String,
-      enum: ["kg", "litre", "piece","dozen","gram","ml"],
+      enum: ["kg", "litre", "piece", "dozen", "gram", "ml"],
       default: "kg",
     },
     pricePerUnit: { type: Number, required: true },
@@ -26,7 +26,7 @@ const itemSchema = new mongoose.Schema(
       ref: "Supplier", // String reference only
       required: true,
     },
-    availableQuantity: { type: Number, required: true },
+    availableQuantity: { type: Number, required: true, min: 0 },
   },
   { timestamps: true }
 );
