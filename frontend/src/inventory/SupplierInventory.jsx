@@ -205,6 +205,20 @@ const SupplierDashboard = () => {
       }
 
       console.log(formData.availableQuantity);
+
+      const price = parseFloat(formData.pricePerUnit);
+      const quantity = parseFloat(formData.availableQuantity);
+
+      if (isNaN(price) || price < 0) {
+        showNotification("Please enter a valid price", "error");
+        return;
+      }
+
+      if (isNaN(quantity) || quantity < 0) {
+        showNotification("Please enter a valid quantity", "error");
+        return;
+      }
+
       const apiUrl = import.meta.env.VITE_API_BASE_URL;
       const response = await fetch(`${apiUrl}/api/items/add`, {
         method: "POST",
@@ -216,8 +230,8 @@ const SupplierDashboard = () => {
           name: formData.name,
           category: formData.category,
           unitType: formData.unitType,
-          pricePerUnit: parseFloat(formData.pricePerUnit),
-          availableQuantity: parseFloat(formData.availableQuantity),
+          pricePerUnit: price,
+          availableQuantity: quantity,
         }),
       });
 

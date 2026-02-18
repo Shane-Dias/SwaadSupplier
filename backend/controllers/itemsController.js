@@ -69,7 +69,7 @@ export const deleteItem = async (req, res) => {
     console.log("Item Supplier:", item.supplier.toString());
     console.log("Logged-in Supplier:", supplierId);
 
-    if (item.supplier.toString() !== supplierId) {
+    if (item.supplier.toString() !== supplierId.toString()) {
       return res
         .status(403)
         .json({ error: "Unauthorized to delete this item" });
@@ -96,7 +96,7 @@ export const updateItem = async (req, res) => {
       return res.status(404).json({ error: "Item not found" });
     }
 
-    if (item.supplier.toString() !== supplierId) {
+    if (item.supplier.toString() !== supplierId.toString()) {
       return res
         .status(403)
         .json({ error: "Unauthorized to update this item" });
