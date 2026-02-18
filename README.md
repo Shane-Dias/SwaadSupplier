@@ -1,4 +1,5 @@
-# 🛒 SwaadSupplier – Raw Material Sourcing Platform for Street Food Vendors
+ 
+ # 🛒 SwaadSupplier – Raw Material Sourcing Platform for Street Food Vendors
 
 ## 🚀 About the Project
 
@@ -47,6 +48,12 @@ SwaadSupplier addresses these issues through:
 *Order Management Dashboard*: View incoming orders from vendors, accept or decline them, and update status (Processing, Shipped, Delivered).
 
 *Analytics & Metrics*: See performance insights like completed orders, top-selling items, and average delivery time.
+
+*Real-time Inventory Management*:
+- **Live Stock Updates**: Inventory counts update automatically as orders are placed.
+- **Low Stock Alerts**: Visual red alerts and counters for items with low stock (< 20 units).
+- **Easy Management**: Add, edit, and delete items with instant updates.
+
 
 ### 🏬 Marketplace (Shared Page)
 
