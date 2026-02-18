@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import OrderTracking from '../components/tracking/OrderTracking'; // Import the new component
+import { MapPin, X } from 'lucide-react';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -9,12 +11,14 @@ export default function VendorOrders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [trackingOrder, setTrackingOrder] = useState(null); // State for the order being tracked
 
   // Status colors mapping
   const statusColors = {
     pending: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-    confirmed: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+    packed: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
     shipped: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+    out_for_delivery: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
     delivered: 'bg-green-500/20 text-green-400 border-green-500/30',
     cancelled: 'bg-red-500/20 text-red-400 border-red-500/30'
   };
@@ -74,10 +78,10 @@ export default function VendorOrders() {
       }
 
       // Update local state to reflect cancellation
-      setOrders(orders.map(order => 
+      setOrders(orders.map(order =>
         order._id === orderId ? { ...order, status: 'cancelled' } : order
       ));
-      
+
       alert('Order cancelled successfully');
     } catch (err) {
       console.error('Error cancelling order:', err);
@@ -93,9 +97,9 @@ export default function VendorOrders() {
 
   // Format date
   const formatDate = (dateString) => {
-    const options = { 
-      year: 'numeric', 
-      month: 'long', 
+    const options = {
+      year: 'numeric',
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -172,8 +176,8 @@ export default function VendorOrders() {
             </div>
           ) : (
             orders.map((order) => (
-              <div 
-                key={order._id} 
+              <div
+                key={order._id}
                 className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6 hover:border-orange-500/50 transition-all duration-300 shadow-[5px_5px_15px_rgba(0,0,0,0.4),-5px_-5px_15px_rgba(70,70,70,0.1)]"
               >
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
@@ -209,18 +213,18 @@ export default function VendorOrders() {
                   <h4 className="font-medium text-white mb-3">Items</h4>
                   <div className="space-y-3">
                     {order.items.map((item) => (
-                      <div 
-                        key={item.item._id} 
+                      <div
+                        key={item.item._id}
                         className="flex justify-between items-center bg-gray-800/50 border border-gray-700 rounded-lg p-3 hover:bg-gray-700/50 transition-all duration-200"
                       >
                         <div className="flex items-center gap-3">
                           <span className="text-xl">
-                            {item.item.category === 'vegetables' ? '🥬' : 
-                             item.item.category === 'fruits' ? '🍎' : 
-                             item.item.category === 'dairy' ? '🥛' : 
-                             item.item.category === 'spice' ? '🌶️' : 
-                             item.item.category === 'oil' ? '🫒' : 
-                             item.item.category === 'grain' ? '🌾' : '📦'}
+                            {item.item.category === 'vegetables' ? '🥬' :
+                              item.item.category === 'fruits' ? '🍎' :
+                                item.item.category === 'dairy' ? '🥛' :
+                                  item.item.category === 'spice' ? '🌶️' :
+                                    item.item.category === 'oil' ? '🫒' :
+                                      item.item.category === 'grain' ? '🌾' : '📦'}
                           </span>
                           <div>
                             <p className="text-white capitalize">{item.item.name}</p>
@@ -245,11 +249,31 @@ export default function VendorOrders() {
                 {/* Order Actions */}
                 {order.status === 'pending' && (
                   <div className="mt-6 flex justify-end gap-3">
-                    <button 
+                    <button
                       className="px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-300 hover:bg-red-500/30 transition-all duration-300 shadow-[3px_3px_6px_rgba(0,0,0,0.25),-2px_-2px_5px_rgba(70,70,70,0.05)]"
                       onClick={() => handleCancelOrder(order._id)}
                     >
                       Cancel Order
+                    </button>
+                    <button
+                      className="px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all duration-300 flex items-center gap-2"
+                      onClick={() => setTrackingOrder(order)}
+                    >
+                      <MapPin size={16} />
+                      Track Order
+                    </button>
+                  </div>
+                )}
+
+                {/* Add Tracking Button for other statuses too if needed */}
+                {order.status !== 'pending' && order.status !== 'cancelled' && (
+                  <div className="mt-6 flex justify-end gap-3">
+                    <button
+                      className="px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all duration-300 flex items-center gap-2"
+                      onClick={() => setTrackingOrder(order)}
+                    >
+                      <MapPin size={16} />
+                      Track Order
                     </button>
                   </div>
                 )}
@@ -258,6 +282,29 @@ export default function VendorOrders() {
           )}
         </div>
       </div>
-    </div>
+
+      {/* Tracking Modal */}
+      {trackingOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-gray-900 rounded-2xl w-full max-w-3xl overflow-hidden border border-gray-700 shadow-2xl relative">
+            <div className="flex items-center justify-between p-6 border-b border-gray-800">
+              <h3 className="text-xl font-bold text-white">
+                Track Order #{trackingOrder._id.slice(-6).toUpperCase()}
+              </h3>
+              <button
+                onClick={() => setTrackingOrder(null)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-6">
+              <OrderTracking order={trackingOrder} status={trackingOrder.status} />
+            </div>
+          </div>
+        </div>
+      )
+      }
+    </div >
   );
 }

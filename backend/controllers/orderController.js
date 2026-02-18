@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 
 export const createOrder = async (req, res) => {
   try {
-    const { supplierName, items, totalAmount } = req.body;
+    const { supplierName, supplierId, items, totalAmount } = req.body;
 
     // 1. Extract vendor ID from JWT token
     const token = req.headers.authorization?.split(" ")[1];
@@ -17,7 +17,7 @@ export const createOrder = async (req, res) => {
     let vendorId;
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      vendorId = decoded.id; // Assuming your JWT payload has userId field
+      vendorId = decoded.id;
     } catch (error) {
       return res.status(401).json({ message: "Invalid or expired token" });
     }
@@ -28,17 +28,23 @@ export const createOrder = async (req, res) => {
       return res.status(404).json({ message: "Vendor not found" });
     }
 
-    // 3. Find supplier by name (case-insensitive)
-    const supplier = await Supplier.findOne({
-      shopName: { $regex: new RegExp(`^${supplierName}$`, "i") },
-    });
+    // 3. Find supplier by ID or name
+    let supplier;
+    if (supplierId) {
+      supplier = await Supplier.findById(supplierId);
+    } else {
+      supplier = await Supplier.findOne({
+        shopName: { $regex: new RegExp(`^${supplierName}$`, "i") },
+      });
+    }
 
-    // if (!supplier) {
-    //   return res.status(404).json({
-    //     message: 'Supplier not found',
-    //     suggestion: 'Please check the supplier name and try again'
-    //   });
-    // }
+    if (!supplier) {
+      console.log(`[Order Error] Supplier not found for Name: ${supplierName}, ID: ${supplierId}`);
+      return res.status(404).json({
+        message: 'Supplier not found',
+        suggestion: 'Please check the supplier and try again'
+      });
+    }
 
     // 4. Validate items and check stock
     const itemValidations = await Promise.all(
@@ -96,9 +102,9 @@ export const createOrder = async (req, res) => {
   } catch (error) {
     console.error("Error creating order:", error);
     res.status(500).json({
-      message: "Server error",
+      message: `Server Error: ${error.message}`,
       error: error.message,
-      details: process.env.NODE_ENV === "development" ? error.stack : undefined,
+      stack: error.stack
     });
   }
 };
@@ -213,7 +219,7 @@ export const updateOrderStatus = async (req, res) => {
     const { orderId } = req.params;
     const { status } = req.body;
 
-    const validStatuses = ["pending", "shipped", "delivered"];
+    const validStatuses = ["pending", "packed", "shipped", "out_for_delivery", "delivered"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });
     }

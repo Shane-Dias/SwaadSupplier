@@ -10,7 +10,7 @@ const SupplierOrdersPage = () => {
   const fetchSupplierOrders = async () => {
     try {
       const response = await fetch(
-        "https://swaadsupplier.onrender.com/api/orders/supplier",
+        `${import.meta.env.VITE_API_BASE_URL}/api/orders/supplier`,
         {
           method: "GET",
           headers: {
@@ -38,7 +38,7 @@ const SupplierOrdersPage = () => {
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
       const res = await fetch(
-        `https://swaadsupplier.onrender.com/api/orders/supplier/update-status/${orderId}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/orders/supplier/update-status/${orderId}`,
         {
           method: "PUT",
           headers: {
@@ -101,7 +101,14 @@ const SupplierOrdersPage = () => {
           icon: Clock,
           color: "text-orange-400",
           bgColor: "bg-orange-400/10",
-          label: "Pending",
+          label: "Ordered",
+        };
+      case "packed":
+        return {
+          icon: Package,
+          color: "text-purple-400",
+          bgColor: "bg-purple-400/10",
+          label: "Packed",
         };
       case "shipped":
         return {
@@ -109,6 +116,13 @@ const SupplierOrdersPage = () => {
           color: "text-blue-400",
           bgColor: "bg-blue-400/10",
           label: "Shipped",
+        };
+      case "out_for_delivery":
+        return {
+          icon: Truck,
+          color: "text-indigo-400",
+          bgColor: "bg-indigo-400/10",
+          label: "Out for Delivery",
         };
       case "delivered":
         return {
@@ -124,6 +138,21 @@ const SupplierOrdersPage = () => {
           bgColor: "bg-gray-400/10",
           label: status,
         };
+    }
+  };
+
+  const getNextStatusAction = (status) => {
+    switch (status) {
+      case "pending":
+        return { label: "Accept & Pack", next: "packed" };
+      case "packed":
+        return { label: "Ship Order", next: "shipped" };
+      case "shipped":
+        return { label: "Out for Delivery", next: "out_for_delivery" };
+      case "out_for_delivery":
+        return { label: "Mark Delivered", next: "delivered" };
+      default:
+        return null;
     }
   };
 
@@ -286,24 +315,22 @@ const SupplierOrdersPage = () => {
 
                     {/* Status Update Buttons */}
                     <div className="flex flex-wrap gap-2 lg:flex-col lg:w-48">
-                      {["pending", "shipped", "delivered"].map((status) => {
-                        const isCurrentStatus = order.status === status;
+                      {(() => {
+                        const nextAction = getNextStatusAction(order.status);
                         const isUpdating = updatingStatus === order._id;
+
+                        if (!nextAction) return (
+                          <div className="text-center p-2 rounded-lg bg-green-500/10 text-green-400 text-sm font-bold border border-green-500/20">
+                            Completed
+                          </div>
+                        );
 
                         return (
                           <button
-                            key={status}
-                            onClick={() =>
-                              handleStatusUpdate(order._id, status)
-                            }
-                            disabled={isCurrentStatus || isUpdating}
-                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex-1 lg:flex-none ${
-                              isCurrentStatus
-                                ? "bg-gradient-to-r from-orange-400 to-red-500 text-white cursor-default"
-                                : "bg-gray-800/40 text-gray-300 hover:bg-gray-700/60 hover:text-white border border-gray-600/50 hover:border-orange-400/50"
-                            } ${
-                              isUpdating ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
+                            onClick={() => handleStatusUpdate(order._id, nextAction.next)}
+                            disabled={isUpdating}
+                            className={`px-4 py-3 rounded-lg font-bold text-sm transition-all duration-200 flex-1 lg:flex-none bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] ${isUpdating ? "opacity-50 cursor-not-allowed" : ""
+                              }`}
                           >
                             {isUpdating ? (
                               <div className="flex items-center justify-center gap-2">
@@ -311,11 +338,11 @@ const SupplierOrdersPage = () => {
                                 Updating...
                               </div>
                             ) : (
-                              status.charAt(0).toUpperCase() + status.slice(1)
+                              nextAction.label
                             )}
                           </button>
                         );
-                      })}
+                      })()}
                     </div>
                   </div>
                 </div>

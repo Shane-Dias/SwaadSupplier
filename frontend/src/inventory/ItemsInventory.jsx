@@ -1,6 +1,6 @@
 // src/components/Inventory/ItemsInventory.jsx
 import { useNavigate } from 'react-router-dom';
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -29,7 +29,7 @@ export default function ItemsInventory() {
   const fetchAllItems = async () => {
     try {
       setLoading(true);
-      const res = await fetch("https://swaadsupplier.onrender.com/api/items/all");
+      const res = await fetch(`${apiUrl}/api/items/all`);
       if (!res.ok) {
         throw new Error("Failed to fetch items");
       }
@@ -211,7 +211,7 @@ export default function ItemsInventory() {
       const firstSupplierId = cart[0].supplierId;
       const firstSupplierName = cart[0].supplier;
       const mixedSuppliers = cart.some(item => item.supplierId !== firstSupplierId);
-      
+
       if (mixedSuppliers) {
         throw new Error('All items in cart must be from the same supplier');
       }
@@ -247,34 +247,34 @@ export default function ItemsInventory() {
 
       // Success - show confirmation and clear cart
       alert(`Order placed successfully! Total: ₹${calculateTotal().toLocaleString()}`);
-      
+
       // Reset quantities in items list
-      setItems(prevItems => 
+      setItems(prevItems =>
         prevItems.map(item => ({
           ...item,
           selectedQuantity: 0
         }))
       );
-      
+
       setCart([]); // Clear cart
-      
+
       // Redirect to orders history
       navigate('/vendor-dashboard');
 
     } catch (error) {
       console.error('Order placement error:', error);
-      
+
       // User-friendly error messages
       let errorMessage = error.message;
-      
+
       if (error.message.includes('Failed to fetch')) {
         errorMessage = 'Network error - please check your connection';
       } else if (error.message.includes('Unexpected token')) {
         errorMessage = 'Invalid server response';
       }
-      
+
       alert(`Error: ${errorMessage}`);
-      
+
       // Optionally refresh token if unauthorized
       if (error.message.includes('Unauthorized') || error.message.includes('token')) {
         localStorage.removeItem('token');
@@ -287,9 +287,8 @@ export default function ItemsInventory() {
 
   return (
     <div
-      className={`transition-all duration-700 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
+      className={`transition-all duration-700 ${isVisible ? "opacity-100" : "opacity-0"
+        }`}
     >
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Header */}
@@ -573,8 +572,8 @@ export default function ItemsInventory() {
                         ₹{calculateTotal().toLocaleString()}
                       </span>
                     </div>
-                    
-                    <button 
+
+                    <button
                       className={`w-full px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${isPlacingOrder ? 'opacity-70 cursor-not-allowed' : ''}`}
                       onClick={handlePlaceOrder}
                       disabled={isPlacingOrder}
