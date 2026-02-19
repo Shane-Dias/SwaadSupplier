@@ -14,6 +14,27 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+const Modal = ({ isOpen, onClose, title, children }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-800 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-white/10">
+          <h2 className="text-xl font-semibold text-white">{title}</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+};
+
 const SupplierDashboard = () => {
   const [items, setItems] = useState([]);
   const [inventory, setInventory] = useState([]);
@@ -295,26 +316,7 @@ const SupplierDashboard = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const Modal = ({ isOpen, onClose, title, children }) => {
-    if (!isOpen) return null;
 
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className="bg-gray-800 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-          <div className="flex items-center justify-between p-6 border-b border-white/10">
-            <h2 className="text-xl font-semibold text-white">{title}</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              <X size={20} />
-            </button>
-          </div>
-          {children}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="min-h-screen bg-gray-900 p-6">
