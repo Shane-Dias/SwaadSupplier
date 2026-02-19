@@ -70,7 +70,7 @@ const RoutingMachine = ({ origin, destination }) => {
 const OrderTracking = ({ order: initialOrder }) => {
     const [order, setOrder] = useState(initialOrder);
     const [currentStatus, setCurrentStatus] = useState(initialOrder.status);
-    const [coordinates, setCoordinates] = useState({
+    const [coordinates] = useState({
         supplier: [19.076, 72.8777], // Mumbai
         vendor: [18.5204, 73.8567], // Pune
     });

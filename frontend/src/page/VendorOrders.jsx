@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import OrderTracking from '../components/tracking/OrderTracking'; // Import the new component
+import OrderTracking from '../Components/tracking/OrderTracking'; // Import the new component
 import { MapPin, X } from 'lucide-react';
 import generateInvoice from "../utils/generateInvoice";
 
