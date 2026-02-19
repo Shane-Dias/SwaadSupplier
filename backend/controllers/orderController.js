@@ -3,6 +3,8 @@ import Vendor from "../models/vendor.js";
 import Supplier from "../models/supplier.js";
 import Item from "../models/item.js";
 import jwt from "jsonwebtoken";
+// Import sendEmail utility
+import sendEmail from "../utils/sendEmail.js";
 
 export const createOrder = async (req, res) => {
   try {
@@ -214,6 +216,8 @@ export const getSupplierOrders = async (req, res) => {
   }
 };
 
+
+
 export const updateOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -224,12 +228,48 @@ export const updateOrderStatus = async (req, res) => {
       return res.status(400).json({ message: "Invalid status value" });
     }
 
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId)
+      .populate("vendor", "name email shopName")
+      .populate("supplier", "name shopName")
+      .populate("items.item", "name pricePerUnit");
+
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
+
     order.status = status;
     await order.save();
+
+    // Send email if status is delivered
+    if (status === "delivered") {
+      const emailSubject = `Order Delivered - Order #${order._id.toString().slice(-6).toUpperCase()}`;
+
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #ea580c;">Order Delivered Successfully!</h2>
+          <p>Dear ${order.vendor.name},</p>
+          <p>Your order placed with <strong>${order.supplier.shopName}</strong> has been delivered.</p>
+          
+          <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>Order ID:</strong> #${order._id.toString().slice(-6).toUpperCase()}</p>
+            <p><strong>Total Amount:</strong> ₹${order.totalAmount}</p>
+            <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">DELIVERED</span></p>
+          </div>
+
+          <p>You can download the invoice from your dashboard.</p>
+          
+          <p>Thank you for choosing SwaadSupplier!</p>
+        </div>
+      `;
+
+      await sendEmail({
+        to: order.vendor.email,
+        subject: emailSubject,
+        html: emailHtml
+      });
+
+      console.log(`📧 Delivery email sent to ${order.vendor.email}`);
+    }
 
     res
       .status(200)

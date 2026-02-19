@@ -19,6 +19,8 @@ const app = express();
 // CORS Configuration
 const allowedOrigins = [
   "http://localhost:5173", // Dev (Vite)
+  "http://localhost:5174", // Fallback Dev
+  "http://localhost:5175", // Current Dev
   "https://swaad-supplier.vercel.app", // Prod
 ];
 
