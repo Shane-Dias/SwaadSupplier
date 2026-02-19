@@ -147,9 +147,7 @@ export const getUserData = async (req, res) => {
     }
 
     res.json({
-      name: user.name,
-      email: user.email,
-      role: decoded.role,
+      ...user.toObject(),
       // Add other user data you want to expose
     });
   } catch (error) {

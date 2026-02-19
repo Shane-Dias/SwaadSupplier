@@ -118,22 +118,40 @@ const Navbar = () => {
       <nav
         className={`
         fixed w-full z-50 transition-all duration-300
-        ${
-          scrolled
+        ${scrolled
             ? "bg-gray-900/90 backdrop-blur-sm shadow-lg py-2"
             : "bg-gray-900/90 backdrop-blur-sm py-4"
-        }
+          }
       `}
       >
         <div className="container mx-auto flex flex-col   md:flex-row justify-between items-center px-4 lg:px-6">
           <div className="flex items-center justify-between w-full md:w-auto mb-4 md:mb-0">
-            <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 py-2 px-4 rounded-xl shadow-[5px_5px_15px_rgba(0,0,0,0.4),-5px_-5px_15px_rgba(70,70,70,0.1)] border-t border-l border-gray-700">
-              <a href="/" className="flex items-center gap-2">
-                <span className="text-2xl">🍜</span>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.6)]">
-                  SwaadSupplier
-                </span>
-              </a>
+            <div className="flex items-center gap-3">
+              <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 py-2 px-4 rounded-xl shadow-[5px_5px_15px_rgba(0,0,0,0.4),-5px_-5px_15px_rgba(70,70,70,0.1)] border-t border-l border-gray-700">
+                <a href="/" className="flex items-center gap-2">
+                  <span className="text-2xl">🍜</span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.6)]">
+                    SwaadSupplier
+                  </span>
+                </a>
+              </div>
+
+              {isLoggedIn && userRole && (
+                <div className={`
+                  hidden sm:flex items-center px-3 py-1 rounded-full border backdrop-blur-md shadow-lg
+                  ${userRole === 'vendor'
+                    ? 'bg-gradient-to-r from-orange-500/10 to-red-500/10 border-orange-500/30 text-orange-400'
+                    : 'bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border-blue-500/30 text-blue-400'
+                  }
+                `}>
+                  <span className="mr-1.5 text-lg">
+                    {userRole === 'vendor' ? '👨‍🍳' : '🏭'}
+                  </span>
+                  <span className="text-xs font-bold uppercase tracking-wider">
+                    {userRole}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -172,7 +190,7 @@ const Navbar = () => {
             {navItems.map((item) => (
               <li key={item} className="relative">
                 {item === userName ? (
-                  <div 
+                  <div
                     className="relative group"
                     onMouseEnter={() => setIsProfileDropdownOpen(true)}
                     onMouseLeave={() => setIsProfileDropdownOpen(false)}
@@ -196,14 +214,19 @@ const Navbar = () => {
                       </span>
                       <span className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                     </button>
-                    <div className={`absolute right-0 mt-1 w-48 bg-gray-800/95 backdrop-blur-sm rounded-lg shadow-lg py-1 z-50 border border-gray-700 transition-all duration-200 ${
-                      isProfileDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-1'
-                    }`}>
+                    <div className={`absolute right-0 mt-1 w-48 bg-gray-800/95 backdrop-blur-sm rounded-lg shadow-lg py-1 z-50 border border-gray-700 transition-all duration-200 ${isProfileDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-1'
+                      }`}>
                       <a
                         href={userRole === 'vendor' ? '/vendor-dashboard' : '/supplier/inventory'}
                         className="block px-4 py-2 text-gray-200 hover:bg-gray-700/50 transition-colors duration-200"
                       >
                         Dashboard
+                      </a>
+                      <a
+                        href="/profile"
+                        className="block px-4 py-2 text-gray-200 hover:bg-gray-700/50 transition-colors duration-200"
+                      >
+                        Profile
                       </a>
                       <button
                         onClick={handleLogout}
@@ -219,11 +242,10 @@ const Navbar = () => {
                     <button
                       className={`
                         relative py-2 px-3 lg:px-4 rounded-lg transition-all duration-300 flex items-center justify-center
-                        ${
-                          activeItem === "orders" ||
+                        ${activeItem === "orders" ||
                           activeItem.startsWith("orders/")
-                            ? "bg-gradient-to-br from-gray-800 to-gray-900 text-orange-400 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.35),inset_-2px_-2px_5px_rgba(80,80,80,0.05)]"
-                            : "bg-gray-800/80 text-gray-300 shadow-[3px_3px_6px_rgba(0,0,0,0.25),-2px_-2px_5px_rgba(70,70,70,0.05)]"
+                          ? "bg-gradient-to-br from-gray-800 to-gray-900 text-orange-400 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.35),inset_-2px_-2px_5px_rgba(80,80,80,0.05)]"
+                          : "bg-gray-800/80 text-gray-300 shadow-[3px_3px_6px_rgba(0,0,0,0.25),-2px_-2px_5px_rgba(70,70,70,0.05)]"
                         }
                         hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-2px_-2px_5px_rgba(70,70,70,0.05)]
                         overflow-hidden border border-gray-800 hover:border-orange-900/50
@@ -255,19 +277,18 @@ const Navbar = () => {
 
                       {(activeItem === "orders" ||
                         activeItem.startsWith("orders/")) && (
-                        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-orange-500 to-red-500"></span>
-                      )}
+                          <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-orange-500 to-red-500"></span>
+                        )}
 
                       <span className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                     </button>
 
                     {/* Orders Dropdown Menu */}
                     <div
-                      className={`absolute left-0 mt-1 w-64 bg-gray-800 rounded-lg shadow-lg py-2 z-50 border border-gray-700 transition-all duration-200 ${
-                        isOrdersDropdownOpen
-                          ? "opacity-100 visible transform translate-y-0"
-                          : "opacity-0 invisible transform -translate-y-2"
-                      }`}
+                      className={`absolute left-0 mt-1 w-64 bg-gray-800 rounded-lg shadow-lg py-2 z-50 border border-gray-700 transition-all duration-200 ${isOrdersDropdownOpen
+                        ? "opacity-100 visible transform translate-y-0"
+                        : "opacity-0 invisible transform -translate-y-2"
+                        }`}
                       onMouseEnter={() => setIsOrdersDropdownOpen(true)}
                       onMouseLeave={() => setIsOrdersDropdownOpen(false)}
                     >
@@ -308,10 +329,9 @@ const Navbar = () => {
                     onClick={() => setActiveItem(item.toLowerCase())}
                     className={`
                       relative py-2 px-3 lg:px-4 rounded-lg transition-all duration-300 flex items-center justify-center
-                      ${
-                        activeItem === item.toLowerCase()
-                          ? "bg-gradient-to-br from-gray-800 to-gray-900 text-orange-400 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.35),inset_-2px_-2px_5px_rgba(80,80,80,0.05)]"
-                          : "bg-gray-800/80 text-gray-300 shadow-[3px_3px_6px_rgba(0,0,0,0.25),-2px_-2px_5px_rgba(70,70,70,0.05)]"
+                      ${activeItem === item.toLowerCase()
+                        ? "bg-gradient-to-br from-gray-800 to-gray-900 text-orange-400 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.35),inset_-2px_-2px_5px_rgba(80,80,80,0.05)]"
+                        : "bg-gray-800/80 text-gray-300 shadow-[3px_3px_6px_rgba(0,0,0,0.25),-2px_-2px_5px_rgba(70,70,70,0.05)]"
                       }
                       hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-2px_-2px_5px_rgba(70,70,70,0.05)]
                       overflow-hidden group border border-gray-800 hover:border-orange-900/50
@@ -338,33 +358,38 @@ const Navbar = () => {
           </ul>
 
           {/* Mobile Navigation */}
-          <div className={`md:hidden w-full transition-all duration-300 overflow-hidden ${
-            isMobileMenuOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
-          }`}>
+          <div className={`md:hidden w-full transition-all duration-300 overflow-hidden ${isMobileMenuOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+            }`}>
             <ul className="flex flex-col space-y-2 mt-4 pb-4">
               {navItems.map((item) => (
                 <li key={item}>
                   {item === userName ? (
                     <div className="space-y-2">
-                      <div className="py-3 px-4 rounded-lg bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30 font-medium">
-                        {userName}
+                      <div className="py-3 px-4 rounded-lg bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30 font-medium flex justify-between items-center">
+                        <span>{userName}</span>
+                        <span className={`text-xs uppercase px-2 py-1 rounded border ${userRole === 'vendor'
+                          ? 'bg-orange-500/10 border-orange-500/20 text-orange-300'
+                          : 'bg-blue-500/10 border-blue-500/20 text-blue-300'
+                          }`}>
+                          {userRole}
+                        </span>
                       </div>
                       <a
                         href={
                           userRole === "vendor"
                             ? "/vendor-dashboard"
-                            : "/supplier-dashboard"
+                            : "/supplier/inventory"
                         }
                         className="block py-3 px-4 rounded-lg transition-all duration-300 bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30"
                       >
                         Dashboard
                       </a>
-                      {/* <a
+                      <a
                         href="/profile"
-                        className="block py-2 px-6 rounded-lg transition-all duration-300 text-gray-300 hover:bg-gray-800/50 hover:text-orange-300"
+                        className="block py-3 px-4 rounded-lg transition-all duration-300 bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 text-gray-300 hover:text-orange-400"
                       >
                         Profile
-                      </a> */}
+                      </a>
                       <button
                         onClick={handleLogout}
                         className="w-full text-left py-2 px-6 rounded-lg font-bold transition-all duration-300 text-red-500 hover:bg-gray-800/50 hover:text-red-700"
@@ -415,10 +440,9 @@ const Navbar = () => {
                       }}
                       className={`
                         block py-3 px-4 rounded-lg transition-all duration-300
-                        ${
-                          activeItem === item.toLowerCase()
-                            ? "bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30"
-                            : "bg-gray-800/50 text-gray-300 border border-gray-700/50"
+                        ${activeItem === item.toLowerCase()
+                          ? "bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30"
+                          : "bg-gray-800/50 text-gray-300 border border-gray-700/50"
                         }
                         hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10 
                         hover:text-orange-300 hover:border-orange-500/20

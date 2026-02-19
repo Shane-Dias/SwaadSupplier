@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar.jsx";
-import Footer from "./components/Footer.jsx";
+import Navbar from "./Components/Navbar.jsx";
+import Footer from "./Components/Footer.jsx";
 import OrderGeneratorContainer from "./generateOrder/OrderGeneratorContainer.jsx";
 import InventoryManager from "./inventory/InventoryManager.jsx";
 import SupplierInventory from "./inventory/SupplierInventory.jsx";
@@ -13,6 +13,7 @@ import SupplierOrdersPage from "./page/SupplierOrdersPage.jsx";
 import Support from "./page/Support.jsx";
 import Marketplace from "../src/page/Marketplace.jsx";
 import Signup from "./page/Signup.jsx";
+import Profile from "./page/Profile.jsx";
 // import BlockchainTrust from "./components/Blockchain.jsx";
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/support" element={<Support />} />
+        <Route path="/profile" element={<Profile />} />
         {/* Add more routes as needed */}
         {/* <Route path="/community" element={<BlockchainTrust />} /> */}
       </Routes>
