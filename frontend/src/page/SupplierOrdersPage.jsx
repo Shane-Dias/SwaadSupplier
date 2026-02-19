@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Package, Clock, Truck, CheckCircle, AlertCircle } from "lucide-react";
+import generateInvoice from "../utils/generateInvoice";
 
 const SupplierOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -345,6 +346,19 @@ const SupplierOrdersPage = () => {
                       })()}
                     </div>
                   </div>
+
+                  {/* Invoice Download for Delivered Orders */}
+                  {order.status === "delivered" && (
+                    <div className="mt-4 flex justify-end border-t border-gray-700 pt-4">
+                      <button
+                        onClick={() => generateInvoice(order)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-700 border border-gray-600 text-gray-300 hover:text-white transition-all duration-200"
+                      >
+                        <span className="text-xl">📄</span>
+                        <span>Download Invoice</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               );
             })

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OrderTracking from '../components/tracking/OrderTracking'; // Import the new component
 import { MapPin, X } from 'lucide-react';
+import generateInvoice from "../utils/generateInvoice";
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -275,6 +276,15 @@ export default function VendorOrders() {
                       <MapPin size={16} />
                       Track Order
                     </button>
+                    {order.status === 'delivered' && (
+                      <button
+                        className="px-4 py-2 rounded-lg bg-green-500/20 border border-green-500/30 text-green-300 hover:bg-green-500/30 transition-all duration-300 flex items-center gap-2"
+                        onClick={() => generateInvoice(order)}
+                      >
+                        <span className="text-xl">📄</span>
+                        Download Invoice
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
