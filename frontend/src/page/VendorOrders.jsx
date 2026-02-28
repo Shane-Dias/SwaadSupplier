@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OrderTracking from '../Components/tracking/OrderTracking'; // Import the new component
-import { MapPin, X } from 'lucide-react';
+import RatingModal from '../Components/RatingModal'; // Import RatingModal
+import { MapPin, X, Star } from 'lucide-react';
 import generateInvoice from "../utils/generateInvoice";
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -13,6 +14,10 @@ export default function VendorOrders() {
   const [error, setError] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const [trackingOrder, setTrackingOrder] = useState(null); // State for the order being tracked
+
+  // Rating Modal State
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [orderToRate, setOrderToRate] = useState(null);
 
   // Status colors mapping
   const statusColors = {
@@ -87,6 +92,38 @@ export default function VendorOrders() {
     } catch (err) {
       console.error('Error cancelling order:', err);
       alert(`Error: ${err.message}`);
+    }
+  };
+
+  const handleRateOrder = (order) => {
+    setOrderToRate(order);
+    setIsRatingModalOpen(true);
+  };
+
+  const handleSubmitReview = async (reviewData) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${apiUrl}/api/reviews/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(reviewData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit review');
+      }
+
+      alert('Review submitted successfully!');
+      // Optionally update local state if you want to hide the button or show "Reviewed"
+
+    } catch (error) {
+      console.error('Review submission error:', error);
+      alert(error.message);
     }
   };
 
@@ -277,13 +314,22 @@ export default function VendorOrders() {
                       Track Order
                     </button>
                     {order.status === 'delivered' && (
-                      <button
-                        className="px-4 py-2 rounded-lg bg-green-500/20 border border-green-500/30 text-green-300 hover:bg-green-500/30 transition-all duration-300 flex items-center gap-2"
-                        onClick={() => generateInvoice(order)}
-                      >
-                        <span className="text-xl">📄</span>
-                        Download Invoice
-                      </button>
+                      <div className="flex gap-3">
+                        <button
+                          className="px-4 py-2 rounded-lg bg-orange-500/20 border border-orange-500/30 text-orange-400 hover:bg-orange-500/30 transition-all duration-300 flex items-center gap-2"
+                          onClick={() => handleRateOrder(order)}
+                        >
+                          <Star size={16} />
+                          Rate Supplier
+                        </button>
+                        <button
+                          className="px-4 py-2 rounded-lg bg-green-500/20 border border-green-500/30 text-green-300 hover:bg-green-500/30 transition-all duration-300 flex items-center gap-2"
+                          onClick={() => generateInvoice(order)}
+                        >
+                          <span className="text-xl">📄</span>
+                          Download Invoice
+                        </button>
+                      </div>
                     )}
                   </div>
                 )}
@@ -313,8 +359,18 @@ export default function VendorOrders() {
             </div>
           </div>
         </div>
-      )
-      }
-    </div >
+      )}
+
+      {/* Rating Modal */}
+      {orderToRate && (
+        <RatingModal
+          isOpen={isRatingModalOpen}
+          onClose={() => setIsRatingModalOpen(false)}
+          onSubmit={handleSubmitReview}
+          orderId={orderToRate._id}
+          supplierName={orderToRate.supplier.shopName}
+        />
+      )}
+    </div>
   );
 }

@@ -30,7 +30,7 @@ export default function OrderGeneratorForm({ onGenerate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validation
     if (!dish || !quantity) {
       alert('Please fill in both dish name and quantity');
@@ -43,7 +43,7 @@ export default function OrderGeneratorForm({ onGenerate }) {
     }
 
     setLoading(true);
-    
+
     try {
       // AI calculation with loading messages
       const loadingMessages = [
@@ -54,10 +54,10 @@ export default function OrderGeneratorForm({ onGenerate }) {
         '💰 Estimating market costs...',
         '✨ Finalizing calculations...'
       ];
-      
+
       let messageIndex = 0;
       setLoadingMessage(loadingMessages[0]);
-      
+
       // Update loading message every 800ms
       const messageInterval = setInterval(() => {
         if (messageIndex < loadingMessages.length - 1) {
@@ -65,14 +65,14 @@ export default function OrderGeneratorForm({ onGenerate }) {
           setLoadingMessage(loadingMessages[messageIndex]);
         }
       }, 800);
-      
+
       console.log(`🚀 Starting AI calculation for ${quantity} plates of ${dish}`);
-      
+
       // Call the enhanced calculateIngredients function (now async)
       const ingredients = await calculateIngredients(dish, Number(quantity));
-      
+
       clearInterval(messageInterval);
-      
+
       if (ingredients.error) {
         console.error('❌ Calculation error:', ingredients.error);
         alert(ingredients.error);
@@ -82,7 +82,7 @@ export default function OrderGeneratorForm({ onGenerate }) {
       // Check if calculation was successful
       const metadata = ingredients._metadata || {};
       const isAICalculated = metadata.source === 'gemini-ai';
-      
+
       if (isAICalculated) {
         console.log('✅ Successfully calculated using Gemini AI');
         setLoadingMessage('🎉 AI calculation completed!');
@@ -100,6 +100,7 @@ export default function OrderGeneratorForm({ onGenerate }) {
         quantity: Number(quantity),
         ingredients,
         estimatedCost: metadata.estimatedCost || 0,
+        typicalSellingPrice: metadata.typicalSellingPrice || 0,
         preparationTime: metadata.preparationTime || 60,
         difficultyLevel: metadata.difficultyLevel || 'medium',
         calculationSource: metadata.source || 'unknown',
@@ -127,7 +128,7 @@ export default function OrderGeneratorForm({ onGenerate }) {
   // Enhanced quantity validation with real-time feedback
   const getQuantityFeedback = () => {
     if (!quantity) return null;
-    
+
     const num = parseInt(quantity);
     if (num < 1) return { type: 'error', message: 'Minimum 1 plate required' };
     if (num > 1000) return { type: 'error', message: 'Maximum 1000 plates allowed' };
@@ -140,10 +141,9 @@ export default function OrderGeneratorForm({ onGenerate }) {
   const quantityFeedback = getQuantityFeedback();
 
   const fadeClass = (element) =>
-    `transition-all duration-1000 transform ${
-      isVisible[element]
-        ? "opacity-100 translate-y-0"
-        : "opacity-0 translate-y-10"
+    `transition-all duration-1000 transform ${isVisible[element]
+      ? "opacity-100 translate-y-0"
+      : "opacity-0 translate-y-10"
     }`;
 
   return (
@@ -169,7 +169,7 @@ export default function OrderGeneratorForm({ onGenerate }) {
             🤖 AI-Powered Order Generator
           </span>
         </div>
-        
+
         <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-red-300">
           Generate Your Order
         </h3>
@@ -177,7 +177,7 @@ export default function OrderGeneratorForm({ onGenerate }) {
           Tell us what you want to cook, and our AI will calculate everything you need with precision
         </p>
       </div>
-      
+
       {/* Main Form */}
       <div className={`max-w-2xl mx-auto ${fadeClass('form')}`}>
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -192,10 +192,10 @@ export default function OrderGeneratorForm({ onGenerate }) {
                     <p className="text-sm text-white/60">Select from our curated list of popular dishes</p>
                   </div>
                 </div>
-                
+
                 <div className="relative">
-                  <select 
-                    value={dish} 
+                  <select
+                    value={dish}
                     onChange={(e) => setDish(e.target.value)}
                     required
                     disabled={loading}
@@ -210,9 +210,9 @@ export default function OrderGeneratorForm({ onGenerate }) {
                       Select a dish...
                     </option>
                     {availableRecipes.map(recipe => (
-                      <option 
-                        key={recipe} 
-                        value={recipe} 
+                      <option
+                        key={recipe}
+                        value={recipe}
                         style={{ backgroundColor: '#1f2937', color: '#ffffff' }}
                       >
                         {recipe.charAt(0).toUpperCase() + recipe.slice(1)}
@@ -221,11 +221,11 @@ export default function OrderGeneratorForm({ onGenerate }) {
                   </select>
                   <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
                     <svg width="12" height="8" viewBox="0 0 12 8" fill="none" className="text-white/40">
-                      <path d="M1 1L6 6L11 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M1 1L6 6L11 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </div>
-                
+
                 {dish && (
                   <div className="mt-3 flex items-center space-x-2 px-4 py-2 rounded-lg bg-green-500/10 border border-green-500/20 animate-fadeInUp">
                     <span className="text-green-400">✅</span>
@@ -246,7 +246,7 @@ export default function OrderGeneratorForm({ onGenerate }) {
                   <p className="text-sm text-white/60">Enter the number of servings you need</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-4">
                 <div className="flex items-center bg-white/5 border border-white/20 rounded-xl overflow-hidden">
                   <button
@@ -257,9 +257,9 @@ export default function OrderGeneratorForm({ onGenerate }) {
                   >
                     −
                   </button>
-                  <input 
-                    type="number" 
-                    value={quantity} 
+                  <input
+                    type="number"
+                    value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     placeholder="50"
                     min="1"
@@ -279,62 +279,81 @@ export default function OrderGeneratorForm({ onGenerate }) {
                 </div>
                 <span className="text-white/60 font-medium">plates</span>
               </div>
-              
+
               {/* Quantity Feedback */}
               {quantityFeedback && (
-                <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg border ${
-                  quantityFeedback.type === 'error' ? 'bg-red-500/10 border-red-500/20' :
+                <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg border ${quantityFeedback.type === 'error' ? 'bg-red-500/10 border-red-500/20' :
                   quantityFeedback.type === 'warning' ? 'bg-yellow-500/10 border-yellow-500/20' :
-                  quantityFeedback.type === 'success' ? 'bg-green-500/10 border-green-500/20' :
-                  'bg-blue-500/10 border-blue-500/20'
-                }`}>
+                    quantityFeedback.type === 'success' ? 'bg-green-500/10 border-green-500/20' :
+                      'bg-blue-500/10 border-blue-500/20'
+                  }`}>
                   <span className={
                     quantityFeedback.type === 'error' ? 'text-red-400' :
-                    quantityFeedback.type === 'warning' ? 'text-yellow-400' :
-                    quantityFeedback.type === 'success' ? 'text-green-400' :
-                    'text-blue-400'
+                      quantityFeedback.type === 'warning' ? 'text-yellow-400' :
+                        quantityFeedback.type === 'success' ? 'text-green-400' :
+                          'text-blue-400'
                   }>
                     {quantityFeedback.type === 'error' ? '⚠️' :
-                     quantityFeedback.type === 'warning' ? '⚡' :
-                     quantityFeedback.type === 'success' ? '✅' : 'ℹ️'}
+                      quantityFeedback.type === 'warning' ? '⚡' :
+                        quantityFeedback.type === 'success' ? '✅' : 'ℹ️'}
                   </span>
-                  <span className={`text-sm font-medium ${
-                    quantityFeedback.type === 'error' ? 'text-red-300' :
+                  <span className={`text-sm font-medium ${quantityFeedback.type === 'error' ? 'text-red-300' :
                     quantityFeedback.type === 'warning' ? 'text-yellow-300' :
-                    quantityFeedback.type === 'success' ? 'text-green-300' :
-                    'text-blue-300'
-                  }`}>
+                      quantityFeedback.type === 'success' ? 'text-green-300' :
+                        'text-blue-300'
+                    }`}>
                     {quantityFeedback.message}
                   </span>
                 </div>
               )}
-              
-              {quantity && parseInt(quantity) > 0 && (
-                <div className="bg-white/5 border border-white/20 rounded-xl p-4 space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-white/70">Estimated cost:</span>
-                    <span className="text-orange-300 font-bold">₹{(parseInt(quantity) * 45).toLocaleString()}</span>
+
+              {quantity && parseInt(quantity) > 0 && (() => {
+                const getEstimatedStats = (d) => {
+                  const lower = (d || '').toLowerCase();
+                  let rate = 50; // Base rate
+                  let timePerPlate = 2; // mins
+
+                  if (lower.includes('thali')) { rate = 120; timePerPlate = 5; }
+                  else if (lower.includes('biryani')) { rate = 150; timePerPlate = 4; }
+                  else if (lower.includes('paneer') || lower.includes('chicken')) { rate = 100; timePerPlate = 4; }
+                  else if (lower.includes('tea') || lower.includes('chai') || lower.includes('coffee')) { rate = 15; timePerPlate = 0.5; }
+                  else if (lower.includes('samosa') || lower.includes('kachori') || lower.includes('vadapav')) { rate = 20; timePerPlate = 1; }
+                  else if (lower.includes('dosa') || lower.includes('idli')) { rate = 60; timePerPlate = 3; }
+
+                  return { cost: rate, time: timePerPlate };
+                };
+
+                const stats = getEstimatedStats(dish);
+                const estimatedCost = parseInt(quantity) * stats.cost;
+                const estimatedTime = Math.ceil((parseInt(quantity) * stats.time) / 60);
+
+                return (
+                  <div className="bg-white/5 border border-white/20 rounded-xl p-4 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70">Estimated cost:</span>
+                      <span className="text-orange-300 font-bold">~₹{estimatedCost.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70">Preparation time:</span>
+                      <span className="text-orange-300 font-bold">~{estimatedTime || '< 1'} hours</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70">AI calculation:</span>
+                      <span className="text-green-300 font-bold flex items-center space-x-1">
+                        <span>🤖</span>
+                        <span>Precise & Optimized</span>
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-white/70">Preparation time:</span>
-                    <span className="text-orange-300 font-bold">{Math.ceil(parseInt(quantity) / 20)} hours</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-white/70">AI calculation:</span>
-                    <span className="text-green-300 font-bold flex items-center space-x-1">
-                      <span>🤖</span>
-                      <span>Precise & Optimized</span>
-                    </span>
-                  </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={handleReset}
               disabled={loading || (!dish && !quantity)}
               className="px-8 py-4 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
@@ -342,10 +361,10 @@ export default function OrderGeneratorForm({ onGenerate }) {
               <span>🔄</span>
               <span>Reset</span>
             </button>
-            
-            <button 
-              type="submit" 
-              disabled={loading || !dish || !quantity || (quantityFeedback && quantityFeedback.type === 'error')} 
+
+            <button
+              type="submit"
+              disabled={loading || !dish || !quantity || (quantityFeedback && quantityFeedback.type === 'error')}
               className="px-8 py-4 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
             >
               {loading ? (
@@ -370,7 +389,7 @@ export default function OrderGeneratorForm({ onGenerate }) {
           <h4 className="text-2xl font-bold text-white mb-2">🤖 Why Choose Our AI Generator?</h4>
           <p className="text-white/60">Powered by advanced Gemini AI to make your ordering process seamless</p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {[
             {
@@ -429,7 +448,7 @@ export default function OrderGeneratorForm({ onGenerate }) {
             <h4 className="text-2xl font-bold text-white mb-2">🚀 How It Works</h4>
             <p className="text-white/60">Our AI-powered process in simple steps</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
@@ -466,11 +485,11 @@ export default function OrderGeneratorForm({ onGenerate }) {
                   <h5 className="text-lg font-semibold text-white mb-2">{step.title}</h5>
                   <p className="text-white/70 text-sm">{step.desc}</p>
                 </div>
-                
+
                 {index < 3 && (
                   <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-orange-400">
-                      <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 )}

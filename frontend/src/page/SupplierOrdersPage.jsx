@@ -349,7 +349,15 @@ const SupplierOrdersPage = () => {
 
                   {/* Invoice Download for Delivered Orders */}
                   {order.status === "delivered" && (
-                    <div className="mt-4 flex justify-end border-t border-gray-700 pt-4">
+                    <div className="mt-4 flex justify-end border-t border-gray-700 pt-4 gap-3">
+                      <button
+                        onClick={() => handleStatusUpdate(order._id, "delivered")}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-700 border border-gray-600 text-gray-300 hover:text-white transition-all duration-200"
+                      >
+                        <span className="text-xl">📧</span>
+                        <span>Resend Email</span>
+                      </button>
+
                       <button
                         onClick={() => generateInvoice(order)}
                         className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-700 border border-gray-600 text-gray-300 hover:text-white transition-all duration-200"

@@ -87,7 +87,7 @@ const Navbar = () => {
   };
 
   const navItems = [
-    "Marketplace",
+    "Credit",
     ...(userRole === 'vendor' ? ["Orders"] : []), // Only show Orders if vendor
     "Community",
     "Support",

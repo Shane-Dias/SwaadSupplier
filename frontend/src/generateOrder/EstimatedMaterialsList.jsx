@@ -2,9 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { getCalculationMetadata, isAICalculated } from '../utils/recipeLogic';
 
-export default function EstimatedMaterialsList({ ingredients, dish, quantity }) {
+export default function EstimatedMaterialsList({ ingredients, dish, quantity, estimatedCost, typicalSellingPrice }) {
   const [isVisible, setIsVisible] = useState({
     header: false,
+    profit: false,
     summary: false,
     aiInfo: false,
     materials: false,
@@ -12,25 +13,44 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
     tips: false,
   });
 
+  const [sellingPrice, setSellingPrice] = useState(typicalSellingPrice || Math.ceil((estimatedCost / quantity) * 1.5));
+
+  // Update selling price when props change
+  useEffect(() => {
+    if (typicalSellingPrice) {
+      setSellingPrice(typicalSellingPrice);
+    } else if (estimatedCost && quantity) {
+      setSellingPrice(Math.ceil((estimatedCost / quantity) * 1.5));
+    }
+  }, [typicalSellingPrice, estimatedCost, quantity]);
+
+  // Financial Calculations
+  const costPerPlate = estimatedCost ? estimatedCost / quantity : 0;
+  const totalRevenue = sellingPrice * quantity;
+  const totalProfit = totalRevenue - estimatedCost;
+  const profitPerPlate = sellingPrice - costPerPlate;
+  const marginPercent = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+  const monthlyProjectedProfit = totalProfit * 26; // Assuming 26 working days
+
   // Staggered animations
   useEffect(() => {
     const timers = [
       setTimeout(() => setIsVisible(prev => ({ ...prev, header: true })), 200),
-      setTimeout(() => setIsVisible(prev => ({ ...prev, summary: true })), 400),
-      setTimeout(() => setIsVisible(prev => ({ ...prev, aiInfo: true })), 600),
-      setTimeout(() => setIsVisible(prev => ({ ...prev, materials: true })), 800),
-      setTimeout(() => setIsVisible(prev => ({ ...prev, stats: true })), 1000),
-      setTimeout(() => setIsVisible(prev => ({ ...prev, tips: true })), 1200),
+      setTimeout(() => setIsVisible(prev => ({ ...prev, profit: true })), 400),
+      setTimeout(() => setIsVisible(prev => ({ ...prev, summary: true })), 600),
+      setTimeout(() => setIsVisible(prev => ({ ...prev, aiInfo: true })), 800),
+      setTimeout(() => setIsVisible(prev => ({ ...prev, materials: true })), 1000),
+      setTimeout(() => setIsVisible(prev => ({ ...prev, stats: true })), 1200),
+      setTimeout(() => setIsVisible(prev => ({ ...prev, tips: true })), 1400),
     ];
 
     return () => timers.forEach(timer => clearTimeout(timer));
   }, []);
 
   const fadeClass = (element) =>
-    `transition-all duration-1000 transform ${
-      isVisible[element]
-        ? "opacity-100 translate-y-0"
-        : "opacity-0 translate-y-10"
+    `transition-all duration-1000 transform ${isVisible[element]
+      ? "opacity-100 translate-y-0"
+      : "opacity-0 translate-y-10"
     }`;
 
   if (!ingredients || Object.keys(ingredients).length === 0) {
@@ -57,7 +77,7 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
   const totalWeight = Object.values(filteredIngredients).reduce((total, ingredient) => {
     return total + (ingredient.unit === 'g' ? ingredient.totalQuantity : 0);
   }, 0);
-  
+
   const totalVolume = Object.values(filteredIngredients).reduce((total, ingredient) => {
     return total + (ingredient.unit === 'ml' ? ingredient.totalQuantity : 0);
   }, 0);
@@ -76,16 +96,77 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
             {isAIGenerated ? '🤖 AI-Calculated Materials' : '📦 Calculated Materials'}
           </span>
         </div>
-        
+
         <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-red-300">
           Raw Materials Required
         </h3>
         <p className="text-white/60 text-lg">
-          {isAIGenerated 
+          {isAIGenerated
             ? 'Precise ingredients calculated by Gemini AI for your order'
             : 'Ingredients calculated using our recipe database'
           }
         </p>
+      </div>
+
+      {/* 💰 New Profit Calculator Section */}
+      <div className={`${fadeClass('profit')}`}>
+        <div className="bg-gradient-to-br from-green-900/40 to-emerald-900/40 border border-green-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <span className="text-9xl">📈</span>
+          </div>
+
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h4 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <span className="text-2xl">💰</span> AI Profit Calculator
+                </h4>
+                <p className="text-green-200/60 text-sm">Analyze your potential earnings</p>
+              </div>
+              <div className={`px-4 py-1 rounded-full border ${marginPercent >= 50 ? 'bg-green-500/20 border-green-500/50 text-green-300' : marginPercent >= 20 ? 'bg-yellow-500/20 border-yellow-500/50 text-yellow-300' : 'bg-red-500/20 border-red-500/50 text-red-300'}`}>
+                {marginPercent.toFixed(1)}% Margin
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {/* Cost Card */}
+              <div className="bg-gray-900/50 rounded-xl p-4 border border-white/10">
+                <p className="text-gray-400 text-sm mb-1">Cost per Plate</p>
+                <div className="text-2xl font-bold text-white">₹{costPerPlate.toFixed(1)}</div>
+                <p className="text-gray-500 text-xs mt-1">Total: ₹{estimatedCost.toLocaleString()}</p>
+              </div>
+
+              {/* Selling Price Input (Interactive) */}
+              <div className="bg-gray-900/50 rounded-xl p-4 border border-blue-500/30 ring-1 ring-blue-500/20">
+                <p className="text-blue-300 text-sm mb-1 font-medium">Selling Price (Editable)</p>
+                <div className="flex items-center gap-1">
+                  <span className="text-2xl font-bold text-white">₹</span>
+                  <input
+                    type="number"
+                    value={sellingPrice}
+                    onChange={(e) => setSellingPrice(Number(e.target.value))}
+                    className="bg-transparent text-2xl font-bold text-white w-full focus:outline-none"
+                  />
+                </div>
+                <p className="text-blue-400/60 text-xs mt-1">AI Suggestion: ₹{typicalSellingPrice || Math.ceil(costPerPlate * 1.5)}</p>
+              </div>
+
+              {/* Profit Per Plate */}
+              <div className="bg-gray-900/50 rounded-xl p-4 border border-green-500/20">
+                <p className="text-green-400 text-sm mb-1">Profit per Rate</p>
+                <div className="text-2xl font-bold text-green-300">₹{profitPerPlate.toFixed(1)}</div>
+                <p className="text-green-500/50 text-xs mt-1">Daily: ₹{totalProfit.toLocaleString()}</p>
+              </div>
+
+              {/* Monthly Projection */}
+              <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-xl p-4 border border-green-500/30">
+                <p className="text-green-200 text-sm mb-1">Monthly Projection</p>
+                <div className="text-2xl font-bold text-emerald-300">₹{monthlyProjectedProfit.toLocaleString()}</div>
+                <p className="text-emerald-200/60 text-xs mt-1">Based on 26 days</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Order Summary */}
@@ -103,22 +184,21 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
                 <p className="text-orange-200/80 text-lg">{quantity} plates</p>
               </div>
             </div>
-            
+
             {/* Calculation Method Badge */}
-            <div className={`px-4 py-2 rounded-full border ${
-              isAIGenerated 
+            <div className={`px-4 py-2 rounded-full border ${isAIGenerated
                 ? 'bg-green-500/20 border-green-500/30 text-green-300'
                 : 'bg-blue-500/20 border-blue-500/30 text-blue-300'
-            }`}>
+              }`}>
               <div className="flex items-center space-x-2 text-sm font-medium">
                 <span>{isAIGenerated ? '🤖' : '📚'}</span>
                 <span>{isAIGenerated ? 'AI Generated' : 'Recipe Based'}</span>
               </div>
             </div>
           </div>
-          
+
           <p className="text-white/70 mb-4">
-            {isAIGenerated 
+            {isAIGenerated
               ? 'Based on advanced AI analysis of authentic recipes, here are the exact ingredients and quantities needed for your order'
               : 'Based on our curated recipe database, here are the ingredients and quantities needed for your order'
             }
@@ -136,11 +216,10 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
                 <div className="text-white/60 text-sm">Prep Time</div>
               </div>
               <div className="text-center">
-                <div className={`font-bold text-lg capitalize ${
-                  metadata.difficultyLevel === 'easy' ? 'text-green-300' :
-                  metadata.difficultyLevel === 'medium' ? 'text-yellow-300' :
-                  'text-red-300'
-                }`}>
+                <div className={`font-bold text-lg capitalize ${metadata.difficultyLevel === 'easy' ? 'text-green-300' :
+                    metadata.difficultyLevel === 'medium' ? 'text-yellow-300' :
+                      'text-red-300'
+                  }`}>
                   {metadata.difficultyLevel}
                 </div>
                 <div className="text-white/60 text-sm">Difficulty</div>
@@ -163,7 +242,7 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
                 <p className="text-blue-200/80 text-sm">Powered by Google Gemini AI</p>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-white/5 rounded-lg p-4">
                 <div className="flex items-center space-x-2 mb-2">
@@ -172,7 +251,7 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
                 </div>
                 <p className="text-white/60 text-xs">AI analyzed traditional cooking methods for accurate ratios</p>
               </div>
-              
+
               <div className="bg-white/5 rounded-lg p-4">
                 <div className="flex items-center space-x-2 mb-2">
                   <span className="text-green-400">✓</span>
@@ -180,7 +259,7 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
                 </div>
                 <p className="text-white/60 text-xs">Quantities include 5-10% buffer for cooking losses</p>
               </div>
-              
+
               <div className="bg-white/5 rounded-lg p-4">
                 <div className="flex items-center space-x-2 mb-2">
                   <span className="text-green-400">✓</span>
@@ -188,7 +267,7 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
                 </div>
                 <p className="text-white/60 text-xs">Cost estimates based on current market rates</p>
               </div>
-              
+
               <div className="bg-white/5 rounded-lg p-4">
                 <div className="flex items-center space-x-2 mb-2">
                   <span className="text-green-400">✓</span>
@@ -229,8 +308,8 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
             };
 
             return (
-              <div 
-                key={ingredient} 
+              <div
+                key={ingredient}
                 className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 transform hover:scale-105"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
@@ -248,7 +327,7 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
                     Required
                   </span>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div className="bg-white/5 rounded-lg p-4">
                     <div className="text-white/60 text-sm mb-1">Total Quantity</div>
@@ -256,7 +335,7 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
                       {details.totalQuantity} {details.unit}
                     </div>
                   </div>
-                  
+
                   <div className="bg-white/5 rounded-lg p-4">
                     <div className="text-white/60 text-sm mb-1">Per Plate</div>
                     <div className="text-lg font-semibold text-white">
@@ -291,7 +370,7 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
             </h4>
             <p className="text-white/60 text-sm mt-2">Complete breakdown of your order requirements</p>
           </div>
-          
+
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
             <div className="text-center space-y-2">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 flex items-center justify-center text-2xl mx-auto">
@@ -302,7 +381,7 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
               </div>
               <div className="text-white/60 text-sm">Unique Ingredients</div>
             </div>
-            
+
             <div className="text-center space-y-2">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 flex items-center justify-center text-2xl mx-auto">
                 📏
@@ -310,7 +389,7 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
               <div className="text-3xl font-bold text-orange-300">{quantity}</div>
               <div className="text-white/60 text-sm">Total Plates</div>
             </div>
-            
+
             <div className="text-center space-y-2">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 flex items-center justify-center text-2xl mx-auto">
                 ⚖️
@@ -320,7 +399,7 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
               </div>
               <div className="text-white/60 text-sm">Total Weight</div>
             </div>
-            
+
             <div className="text-center space-y-2">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 flex items-center justify-center text-2xl mx-auto">
                 🥤
@@ -354,19 +433,19 @@ export default function EstimatedMaterialsList({ ingredients, dish, quantity }) 
             <span>{isAIGenerated ? 'AI-Powered Tips' : 'Expert Tips'}</span>
           </h4>
           <p className="text-white/60 mt-2">
-            {isAIGenerated 
+            {isAIGenerated
               ? 'Smart recommendations generated by AI for optimal results'
               : 'Expert recommendations for your order'
             }
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
               icon: '⏰',
               title: 'Optimal Timing',
-              description: isAIGenerated 
+              description: isAIGenerated
                 ? `Based on AI analysis, start preparation ${Math.ceil(metadata.preparationTime / 60)} hours before serving`
                 : 'Place orders 24-48 hours before needed to ensure availability'
             },

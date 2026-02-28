@@ -4,15 +4,15 @@ class GeminiService {
   constructor() {
     // Vite uses import.meta.env instead of process.env
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    
+
     if (!apiKey) {
       throw new Error('Gemini API key is not configured. Please add VITE_GEMINI_API_KEY to your .env file.');
     }
-    
+
     console.log('✅ Gemini API key loaded successfully');
-    
+
     this.genAI = new GoogleGenerativeAI(apiKey);
-    this.model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    this.model = this.genAI.getGenerativeModel({ model: "gemini-pro" });
   }
 
   async calculateIngredients(dishName, quantity) {
@@ -37,6 +37,7 @@ class GeminiService {
             }
           },
           "estimatedCost": number,
+          "typicalSellingPrice": number,
           "preparationTime": number,
           "difficultyLevel": "easy" | "medium" | "hard"
         }
@@ -47,6 +48,7 @@ class GeminiService {
         - Use grams (g) for solid ingredients and milliliters (ml) for liquids
         - Consider standard Indian street food portion sizes
         - Include realistic market prices for cost estimation
+        - For 'typicalSellingPrice', provide the average street food price per plate in rupees (e.g., Pav Bhaji ~60-80)
         - Account for wastage (add 5-10% extra to quantities)
         
         Respond with ONLY the JSON object, nothing else.
@@ -56,24 +58,24 @@ class GeminiService {
       const result = await this.model.generateContent(prompt);
       const response = result.response;
       let text = response.text();
-      
+
       console.log('📝 Raw Gemini response:', text);
-      
+
       // Clean the response - remove markdown formatting
       text = this.cleanJSONResponse(text);
-      
+
       console.log('🧹 Cleaned response:', text);
-      
+
       // Parse the JSON response
       const ingredientsData = JSON.parse(text);
-      
+
       console.log('✅ Successfully parsed Gemini response');
-      
+
       return {
         success: true,
         data: ingredientsData
       };
-      
+
     } catch (error) {
       console.error('❌ Error calculating ingredients with Gemini:', error);
       return {
@@ -90,21 +92,21 @@ class GeminiService {
       // Remove markdown code blocks
       text = text.replace(/```json/g, '');
       text = text.replace(/```/g, '');
-      
+
       // Remove any leading/trailing whitespace
       text = text.trim();
-      
+
       // Find the first { and last } to extract just the JSON part
       const firstBrace = text.indexOf('{');
       const lastBrace = text.lastIndexOf('}');
-      
+
       if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
         text = text.substring(firstBrace, lastBrace + 1);
       }
-      
+
       // Test if it's valid JSON
       JSON.parse(text);
-      
+
       return text;
     } catch (error) {
       console.error('❌ Failed to clean JSON response:', error);
@@ -115,7 +117,7 @@ class GeminiService {
   // Fallback function in case Gemini fails
   getFallbackIngredients(dishName, quantity) {
     console.log('⚠️ Using fallback ingredients calculation');
-    
+
     const fallbackRecipes = {
       'chole bhature': {
         'chickpeas': { quantityPerPlate: 80, totalQuantity: 80 * quantity, unit: 'g', category: 'protein' },

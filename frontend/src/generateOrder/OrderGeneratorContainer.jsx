@@ -113,13 +113,13 @@ export default function OrderGeneratorContainer() {
 
   const calculateTotalCost = () => {
     if (!orderData || !selectedSuppliers || !suppliersData) return 0;
-    
+
     let total = 0;
     Object.entries(orderData.ingredients).forEach(([ingredient, details]) => {
       const supplierId = selectedSuppliers[ingredient];
       const suppliers = suppliersData[ingredient] || [];
       const supplier = suppliers.find(s => s.id === supplierId);
-      
+
       if (supplier) {
         const requiredKg = details.totalQuantity / 1000;
         const requiredLiters = details.unit === 'ml' ? details.totalQuantity / 1000 : 0;
@@ -127,7 +127,7 @@ export default function OrderGeneratorContainer() {
         total += requiredQuantity * supplier.price;
       }
     });
-    
+
     return Math.ceil(total * 100) / 100;
   };
 
@@ -170,27 +170,29 @@ export default function OrderGeneratorContainer() {
     switch (activeTab) {
       case 'generate':
         return <OrderGeneratorForm onGenerate={handleGenerate} />;
-      
+
       case 'materials':
         return orderData ? (
-          <EstimatedMaterialsList 
+          <EstimatedMaterialsList
             ingredients={orderData.ingredients}
             dish={orderData.dish}
             quantity={orderData.quantity}
+            estimatedCost={orderData.estimatedCost}
+            typicalSellingPrice={orderData.typicalSellingPrice}
           />
         ) : null;
-      
+
       case 'suppliers':
         return orderData ? (
-          <SupplierList 
+          <SupplierList
             ingredients={orderData.ingredients}
             onSupplierSelect={handleSupplierSelect}
           />
         ) : null;
-      
+
       case 'cart':
         return orderData && Object.keys(selectedSuppliers).length > 0 ? (
-          <OrderCart 
+          <OrderCart
             ingredients={orderData.ingredients}
             selectedSuppliers={selectedSuppliers}
             suppliersData={suppliersData}
@@ -198,7 +200,7 @@ export default function OrderGeneratorContainer() {
             quantity={orderData.quantity}
           />
         ) : null;
-      
+
       default:
         return null;
     }
@@ -237,10 +239,9 @@ export default function OrderGeneratorContainer() {
   };
 
   const fadeClass = (element) =>
-    `transition-all duration-1000 transform ${
-      isVisible[element]
-        ? "opacity-100 translate-y-0"
-        : "opacity-0 translate-y-10"
+    `transition-all duration-1000 transform ${isVisible[element]
+      ? "opacity-100 translate-y-0"
+      : "opacity-0 translate-y-10"
     }`;
 
   return (
@@ -259,7 +260,7 @@ export default function OrderGeneratorContainer() {
       <header className={`relative z-10 px-4 md:px-6 py-3 md:py-4 border-b border-white/10 bg-white/5 backdrop-blur-sm ${fadeClass('header')}`}>
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-2 md:space-x-4">
-            <button 
+            <button
               className="md:hidden mr-2 text-white/80 hover:text-white"
               onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
             >
@@ -277,7 +278,7 @@ export default function OrderGeneratorContainer() {
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
             <span className="text-xs md:text-sm text-orange-200/80">Live System</span>
@@ -288,7 +289,7 @@ export default function OrderGeneratorContainer() {
       <div className="relative z-10 flex flex-col md:flex-row min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-80px)]">
         {/* Mobile Sidebar Overlay */}
         {isMobileSidebarOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-black/50 z-20 md:hidden"
             onClick={() => setIsMobileSidebarOpen(false)}
           />
@@ -298,7 +299,7 @@ export default function OrderGeneratorContainer() {
         <aside className={`fixed md:relative z-30 md:z-0 w-72 md:w-80 h-full bg-gray-800 md:bg-white/5 backdrop-blur-sm border-r border-white/10 overflow-y-auto transition-transform duration-300 ease-in-out ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 ${fadeClass('sidebar')}`}>
           <div className="p-4 md:p-6 space-y-4 md:space-y-6">
             {/* Close button for mobile */}
-            <button 
+            <button
               className="md:hidden absolute top-3 right-3 text-white/60 hover:text-white"
               onClick={() => setIsMobileSidebarOpen(false)}
             >
@@ -403,7 +404,7 @@ export default function OrderGeneratorContainer() {
             </div> */}
           </div>
         </aside>
-        
+
         {/* Main Content Area */}
         <main className={`flex-1 overflow-y-auto ${fadeClass('content')}`}>
           <div className="p-4 md:p-6 max-w-6xl mx-auto">

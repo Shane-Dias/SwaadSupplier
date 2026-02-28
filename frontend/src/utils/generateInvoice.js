@@ -2,7 +2,7 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
 const generateInvoice = (order) => {
-    // eslint-disable-next-line new-cap
+     
     const doc = new jsPDF();
 
     // Branding: Company Name or Logo

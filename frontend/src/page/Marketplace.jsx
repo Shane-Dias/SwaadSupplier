@@ -1,563 +1,327 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, MapPin, Star, Clock, Truck, ShoppingCart, Heart, Phone, MessageCircle } from 'lucide-react';
-import Particles, { initParticlesEngine } from "@tsparticles/react";
-import { loadSlim } from "@tsparticles/slim";
+import React, { useState, useEffect } from "react";
+import {
+  CreditCard, TrendingUp, AlertCircle, CheckCircle, Clock,
+  DollarSign, Shield, Users, Wallet, Send, Phone, RefreshCcw
+} from "lucide-react";
 
 const Marketplace = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedLocation, setSelectedLocation] = useState('all');
-  const [sortBy, setSortBy] = useState('rating');
-  const [favorites, setFavorites] = useState([]);
-  const [cart, setCart] = useState([]);
-  const [init, setInit] = useState(false);
-  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [userRole, setUserRole] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Initialize tsParticles engine
-  useEffect(() => {
-    initParticlesEngine(async (engine) => {
-      await loadSlim(engine);
-    }).then(() => {
-      setInit(true);
-    });
-  }, []);
+  // Vendor State
+  const [creditScore, setCreditScore] = useState(500);
+  const [totalDue, setTotalDue] = useState(0);
+  const [creditLimit, setCreditLimit] = useState(20000);
+  const [vendorTransactions, setVendorTransactions] = useState([]);
 
-  // Sample suppliers data
-  const suppliers = [
-    {
-      id: 1,
-      name: "Fresh Veggie Hub",
-      category: "vegetables",
-      location: "Andheri, Mumbai",
-      rating: 4.8,
-      reviews: 234,
-      deliveryTime: "30-45 mins",
-      minOrder: 500,
-      image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=300&h=200&fit=crop",
-      specialties: ["Onions", "Tomatoes", "Potatoes", "Leafy Greens"],
-      priceRange: "₹20-150/kg",
-      verified: true,
-      phone: "+91 98765 43210",
-      description: "Premium quality vegetables sourced directly from farms. Best prices guaranteed.",
-      offers: ["Bulk discount 15%", "Free delivery above ₹1000"]
-    },
-    {
-      id: 2,
-      name: "Spice Master",
-      category: "spices",
-      location: "Crawford Market, Mumbai",
-      rating: 4.9,
-      reviews: 456,
-      deliveryTime: "20-30 mins",
-      minOrder: 300,
-      image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=300&h=200&fit=crop",
-      specialties: ["Garam Masala", "Turmeric", "Red Chili", "Cumin"],
-      priceRange: "₹50-500/kg",
-      verified: true,
-      phone: "+91 98765 43211",
-      description: "Authentic spices with traditional grinding methods. Export quality guaranteed.",
-      offers: ["Buy 3 get 1 free", "Sample packs available"]
-    },
-    {
-      id: 3,
-      name: "Meat & More",
-      category: "meat",
-      location: "Bandra, Mumbai",
-      rating: 4.7,
-      reviews: 189,
-      deliveryTime: "45-60 mins",
-      minOrder: 800,
-      image: "https://images.unsplash.com/photo-1588347818668-d4755e8e4eee?w=300&h=200&fit=crop",
-      specialties: ["Chicken", "Mutton", "Fish", "Prawns"],
-      priceRange: "₹200-800/kg",
-      verified: true,
-      phone: "+91 98765 43212",
-      description: "Fresh halal meat and seafood. Daily fresh stock with proper cold storage.",
-      offers: ["Weekend discount 20%", "Bulk orders welcome"]
-    },
-    {
-      id: 4,
-      name: "Oil & Grains Co.",
-      category: "oils",
-      location: "Dadar, Mumbai",
-      rating: 4.6,
-      reviews: 312,
-      deliveryTime: "25-40 mins",
-      minOrder: 600,
-      image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=300&h=200&fit=crop",
-      specialties: ["Sunflower Oil", "Mustard Oil", "Coconut Oil", "Rice Bran Oil"],
-      priceRange: "₹80-200/L",
-      verified: true,
-      phone: "+91 98765 43213",
-      description: "Pure and authentic cooking oils. Wholesale rates for bulk purchases.",
-      offers: ["Monthly subscription 10% off", "Quality guarantee"]
-    },
-    {
-      id: 5,
-      name: "Dairy Fresh",
-      category: "dairy",
-      location: "Worli, Mumbai",
-      rating: 4.5,
-      reviews: 287,
-      deliveryTime: "15-25 mins",
-      minOrder: 200,
-      image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=300&h=200&fit=crop",
-      specialties: ["Milk", "Paneer", "Curd", "Butter"],
-      priceRange: "₹40-300/kg",
-      verified: true,
-      phone: "+91 98765 43214",
-      description: "Fresh dairy products delivered daily. Farm to table quality.",
-      offers: ["Daily delivery available", "Subscription discounts"]
-    },
-    {
-      id: 6,
-      name: "Street Snack Supplies",
-      category: "snacks",
-      location: "Borivali, Mumbai",
-      rating: 4.4,
-      reviews: 156,
-      deliveryTime: "35-50 mins",
-      minOrder: 400,
-      image: "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=300&h=200&fit=crop",
-      specialties: ["Puri", "Sev", "Papdi", "Namkeen"],
-      priceRange: "₹30-150/kg",
-      verified: true,
-      phone: "+91 98765 43215",
-      description: "Ready-to-use street food ingredients. Crispy and fresh guaranteed.",
-      offers: ["Combo packs available", "Festival specials"]
+  // Supplier State
+  const [totalReceivables, setTotalReceivables] = useState(0);
+  const [activeVendors, setActiveVendors] = useState(0);
+  const [vendorDebts, setVendorDebts] = useState([]);
+
+  const token = localStorage.getItem("token");
+
+  // Fetch Role & Data
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // 1. Get Role
+      const roleRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!roleRes.ok) throw new Error("Failed to fetch user role");
+      const roleData = await roleRes.json();
+      const role = roleData.role;
+      setUserRole(role);
+
+      // 2. Fetch Dashboard Data based on Role
+      if (role === 'vendor') {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/credit/vendor-summary`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error("Failed to fetch credit stats");
+        const data = await res.json();
+        setCreditScore(data.trustScore);
+        setCreditLimit(data.creditLimit);
+        setTotalDue(data.totalDue);
+        setVendorTransactions(data.transactions);
+
+      } else if (role === 'supplier') {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/credit/supplier-summary`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error("Failed to fetch collections");
+        const data = await res.json();
+        setTotalReceivables(data.totalReceivables);
+        setActiveVendors(data.activeVendors);
+        setVendorDebts(data.vendorDebts);
+      }
+
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  ];
-
-  const categories = [
-    { id: 'all', name: 'All', icon: '🏪' },
-    { id: 'vegetables', name: 'Veggies', icon: '🥬' },
-    { id: 'spices', name: 'Spices', icon: '🌶️' },
-    { id: 'meat', name: 'Meat', icon: '🍖' },
-    { id: 'dairy', name: 'Dairy', icon: '🥛' },
-    { id: 'oils', name: 'Oils', icon: '🫒' },
-    { id: 'snacks', name: 'Snacks', icon: '🥨' }
-  ];
-
-  const locations = [
-    { id: 'all', name: 'All Mumbai' },
-    { id: 'andheri', name: 'Andheri' },
-    { id: 'bandra', name: 'Bandra' },
-    { id: 'dadar', name: 'Dadar' },
-    { id: 'worli', name: 'Worli' },
-    { id: 'borivali', name: 'Borivali' }
-  ];
-
-  // Particles configuration for floating food elements
-  const particlesOptions = useMemo(
-    () => ({
-      background: {
-        color: {
-          value: "transparent",
-        },
-      },
-      fpsLimit: 60,
-      particles: {
-        color: {
-          value: ["#f97316", "#fb923c", "#fdba74", "#fed7aa", "#ffffff"],
-        },
-        move: {
-          enable: true,
-          direction: "top",
-          outModes: {
-            default: "out",
-          },
-          random: true,
-          speed: 0.3,
-          straight: false,
-        },
-        number: {
-          density: {
-            enable: true,
-            area: 1000,
-          },
-          value: 120,
-        },
-        opacity: {
-          value: { min: 0.2, max: 0.7 },
-          animation: {
-            enable: true,
-            speed: 0.8,
-            minimumValue: 0.1,
-            sync: false,
-          },
-        },
-        shape: {
-          type: "circle",
-        },
-        size: {
-          value: { min: 1, max: 4 },
-          animation: {
-            enable: true,
-            speed: 1.5,
-            minimumValue: 0.3,
-            sync: false,
-          },
-        },
-        twinkle: {
-          lines: {
-            enable: true,
-            frequency: 0.005,
-            color: {
-              value: "#f97316",
-            },
-            opacity: 0.6,
-          },
-          particles: {
-            enable: true,
-            frequency: 0.03,
-            color: {
-              value: "#fb923c",
-            },
-            opacity: 0.3,
-          },
-        },
-      },
-      detectRetina: true,
-    }),
-    []
-  );
-
-  // Filter suppliers based on search and filters
-  const filteredSuppliers = suppliers.filter(supplier => {
-    const matchesSearch = supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         supplier.specialties.some(specialty => 
-                           specialty.toLowerCase().includes(searchTerm.toLowerCase())
-                         );
-    const matchesCategory = selectedCategory === 'all' || supplier.category === selectedCategory;
-    const matchesLocation = selectedLocation === 'all' || 
-                           supplier.location.toLowerCase().includes(selectedLocation);
-    
-    return matchesSearch && matchesCategory && matchesLocation;
-  });
-
-  // Sort suppliers
-  const sortedSuppliers = [...filteredSuppliers].sort((a, b) => {
-    switch (sortBy) {
-      case 'rating':
-        return b.rating - a.rating;
-      case 'deliveryTime':
-        return parseInt(a.deliveryTime) - parseInt(b.deliveryTime);
-      case 'minOrder':
-        return a.minOrder - b.minOrder;
-      default:
-        return 0;
-    }
-  });
-
-  const toggleFavorite = (supplierId) => {
-    setFavorites(prev => 
-      prev.includes(supplierId) 
-        ? prev.filter(id => id !== supplierId)
-        : [...prev, supplierId]
-    );
   };
 
-  const SupplierCard = ({ supplier }) => (
-    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:border-orange-500/40 hover:bg-white/10 transition-all duration-500 group hover:shadow-2xl hover:shadow-orange-500/10 hover:-translate-y-1">
-      {/* Image */}
-      <div className="relative h-40 overflow-hidden">
-        <img 
-          src={supplier.image} 
-          alt={supplier.name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-        
-        {supplier.verified && (
-          <div className="absolute top-2 left-2 bg-green-500/90 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
-            Verified
-          </div>
-        )}
-        
-        <button 
-          onClick={() => toggleFavorite(supplier.id)}
-          className="absolute top-2 right-2 w-7 h-7 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/40 transition-all duration-300 hover:scale-110"
-        >
-          <Heart 
-            size={14} 
-            className={favorites.includes(supplier.id) ? 'text-red-400 fill-current' : 'text-white/80'} 
-          />
-        </button>
+  useEffect(() => {
+    if (token) fetchData();
+    else setLoading(false);
+  }, [token]);
 
-        {/* Rating badge on image */}
-        <div className="absolute bottom-2 right-2 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs flex items-center gap-1">
-          <Star size={12} fill="currentColor" className="text-yellow-400" />
-          <span className="font-medium">{supplier.rating}</span>
-        </div>
+  const calculateProgress = (score) => ((score - 300) / 550) * 100;
+
+  const handleVendorPay = async (orderId) => {
+    if (!window.confirm("Confirm Payment via Swaad Wallet?")) return;
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/credit/pay`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ orderId })
+      });
+
+      if (!res.ok) throw new Error("Payment Failed");
+
+      alert("Payment Successful! Trust Score Updated 🚀");
+      fetchData(); // Refresh data
+
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleSendReminder = async (vendorId) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/credit/remind`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ vendorId })
+      });
+      if (res.ok) alert(`Reminder sent successfully! 📲`);
+    } catch (err) {
+      alert("Failed to send reminder");
+    }
+  };
+
+  if (loading) return (
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+        <p>Loading Credit Dashboard...</p>
       </div>
+    </div>
+  );
 
-      {/* Content */}
-      <div className="p-4">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-base font-semibold text-white group-hover:text-orange-400 transition-colors leading-tight">
-            {supplier.name}
-          </h3>
-          <div className="text-xs text-white/50">
-            ({supplier.reviews})
-          </div>
-        </div>
-
-        <p className="text-white/60 text-xs mb-3 line-clamp-2 leading-relaxed">{supplier.description}</p>
-
-        {/* Location & Delivery */}
-        <div className="flex items-center justify-between mb-3 text-xs text-white/50">
-          <div className="flex items-center gap-1">
-            <MapPin size={12} />
-            <span className="truncate">{supplier.location.split(',')[0]}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Clock size={12} />
-            <span>{supplier.deliveryTime.split('-')[0]} min</span>
-          </div>
-        </div>
-
-        {/* Specialties */}
-        <div className="mb-3">
-          <div className="flex flex-wrap gap-1">
-            {supplier.specialties.slice(0, 2).map((specialty, index) => (
-              <span 
-                key={index}
-                className="px-2 py-0.5 bg-orange-500/15 text-orange-300 text-xs rounded-full font-medium"
-              >
-                {specialty}
-              </span>
-            ))}
-            {supplier.specialties.length > 2 && (
-              <span className="px-2 py-0.5 bg-white/10 text-white/50 text-xs rounded-full">
-                +{supplier.specialties.length - 2}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Price & Min Order */}
-        <div className="flex justify-between items-center mb-3">
-          <div>
-            <div className="text-orange-400 font-bold text-sm">{supplier.priceRange}</div>
-            <div className="text-xs text-white/40">Min ₹{supplier.minOrder}</div>
-          </div>
-          {supplier.offers.length > 0 && (
-            <div className="text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded-md font-medium">
-              🎉 Offer
-            </div>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-2">
-          <button className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-2 px-3 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 text-sm font-semibold hover:shadow-lg hover:shadow-orange-500/25">
-            <ShoppingCart size={14} />
-            Order
-          </button>
-          <button className="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-105">
-            <Phone size={14} className="text-white/80" />
-          </button>
-          <button className="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-105">
-            <MessageCircle size={14} className="text-white/80" />
-          </button>
-        </div>
+  if (!token) return (
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold mb-4">Please Login</h2>
+        <p className="text-gray-400">You need to be logged in to access the credit system.</p>
+        <a href="/login" className="mt-4 inline-block bg-orange-500 px-6 py-2 rounded-lg">Login</a>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen w-full bg-gray-900 relative overflow-x-hidden">
-      {/* Particles background */}
-      {init && (
-        <Particles className="absolute inset-0" options={particlesOptions} />
-      )}
+    <div className="min-h-screen w-full bg-gray-900 text-white p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
 
-      {/* Gradient backgrounds */}
-      <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-red-500/10" />
-      
-      {/* Decorative elements */}
-      <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-orange-500/8 blur-3xl" />
-      <div className="absolute bottom-20 right-10 w-64 h-64 rounded-full bg-red-500/8 blur-3xl" />
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-yellow-500/5 blur-3xl" />
-
-      {/* Header */}
-      <div className="relative z-10 bg-gradient-to-r from-orange-500/5 to-red-500/5 border-b border-white/10 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-orange-500/20 mb-4">
-            <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-            <span className="text-sm text-orange-200/80 tracking-wide font-medium">
-              🍜 Street Food Marketplace
-            </span>
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/50 p-4 rounded-lg text-red-200 flex justify-between items-center">
+            <span>Error: {error}</span>
+            <button onClick={fetchData} className="bg-red-500/20 px-3 py-1 rounded hover:bg-red-500/30">Retry</button>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold mb-1">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-300 via-yellow-200 to-red-300">
-              Marketplace
-            </span>
-          </h1>
-          <p className="text-white/60 text-sm max-w-2xl leading-relaxed">
-            Discover trusted suppliers for street food ingredients. Quality guaranteed, competitive prices.
-          </p>
-        </div>
-      </div>
+        )}
 
-      <div className="relative z-10 container mx-auto px-4 py-6">
-        {/* Search and Filters */}
-        <div className="mb-6 space-y-3">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={18} />
-            <input
-              type="text"
-              placeholder="Search suppliers, ingredients..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-white/40 focus:border-orange-500/50 focus:outline-none focus:bg-white/10 transition-all text-sm"
-            />
-          </div>
+        {/* ==============================================================================================
+                                      VENDOR VIEW
+           ============================================================================================== */}
+        {userRole === 'vendor' ? (
+          <>
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-green-500 bg-clip-text text-transparent">
+                  My Khata & Credit
+                </h1>
+                <p className="text-gray-400">Build trust, get more credit.</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <button onClick={fetchData} className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 tooltip" title="Refresh">
+                  <RefreshCcw size={18} />
+                </button>
+                <div className="bg-green-500/10 px-4 py-2 rounded-lg border border-green-500/20 text-green-400 font-bold">
+                  Limit: ₹{creditLimit.toLocaleString()}
+                </div>
+              </div>
+            </div>
 
-          {/* Mobile Filters Button */}
-          <button 
-            onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
-            className="md:hidden flex items-center gap-2 px-3 py-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-white/60 hover:text-white/80 text-sm"
-          >
-            <Filter size={16} />
-            <span>Filters ({filteredSuppliers.length} results)</span>
-          </button>
-
-          {/* Mobile Filters Panel */}
-          {isMobileFiltersOpen && (
-            <div className="md:hidden bg-gray-800/95 backdrop-blur-lg p-4 rounded-xl border border-white/10 space-y-3">
-              {/* Category Filters */}
-              <div className="space-y-2">
-                <h3 className="text-white/80 text-sm font-medium">Categories</h3>
-                <div className="flex flex-wrap gap-2">
-                  {categories.map(category => (
-                    <button
-                      key={category.id}
-                      onClick={() => setSelectedCategory(category.id)}
-                      className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium ${
-                        selectedCategory === category.id
-                          ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/25'
-                          : 'bg-white/5 backdrop-blur-md text-white/60 hover:bg-white/10 hover:text-white/80 border border-white/10'
-                      }`}
-                    >
-                      <span className="text-sm">{category.icon}</span>
-                      <span>{category.name}</span>
-                    </button>
-                  ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Score Card */}
+              <div className="bg-gray-800 border border-white/10 p-6 rounded-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                <h3 className="text-gray-400 font-medium mb-4">Swaad Trust Score</h3>
+                <div className="flex items-end gap-3 mb-4">
+                  <span className="text-5xl font-bold text-white">{creditScore}</span>
+                  <span className="text-green-500 mb-2 font-medium">Excellent</span>
+                </div>
+                <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-red-500 via-yellow-400 to-green-500" style={{ width: `${calculateProgress(creditScore)}%` }}></div>
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-2">
+                  <span>Unverified (300)</span>
+                  <span>Trusted (850)</span>
                 </div>
               </div>
 
-              {/* Additional Filters */}
-              <div className="space-y-2">
-                <h3 className="text-white/80 text-sm font-medium">Location</h3>
-                <select
-                  value={selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500/50 focus:outline-none"
-                >
-                  {locations.map(location => (
-                    <option key={location.id} value={location.id} className="bg-gray-800 text-white">
-                      {location.name}
-                    </option>
-                  ))}
-                </select>
+              {/* Due Card */}
+              <div className="bg-gray-800 border border-white/10 p-6 rounded-2xl">
+                <h3 className="text-gray-400 font-medium mb-4">Outstanding Dues</h3>
+                <div className="text-4xl font-bold text-white mb-2">₹{totalDue.toLocaleString()}</div>
+                <div className="flex gap-2 mt-4">
+                  {totalDue > 0 ? (
+                    <div className="px-3 py-1 bg-red-500/20 text-red-400 rounded-lg text-sm flex items-center gap-1">
+                      <AlertCircle size={14} /> Payments Due
+                    </div>
+                  ) : (
+                    <div className="px-3 py-1 bg-green-500/20 text-green-400 rounded-lg text-sm flex items-center gap-1">
+                      <CheckCircle size={14} /> All All Clear
+                    </div>
+                  )}
+                </div>
               </div>
-
-              <div className="space-y-2">
-                <h3 className="text-white/80 text-sm font-medium">Sort By</h3>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500/50 focus:outline-none"
-                >
-                  <option value="rating" className="bg-gray-800 text-white">Best Rated</option>
-                  <option value="deliveryTime" className="bg-gray-800 text-white">Fastest</option>
-                  <option value="minOrder" className="bg-gray-800 text-white">Low Order</option>
-                </select>
-              </div>
-
-              <button 
-                onClick={() => setIsMobileFiltersOpen(false)}
-                className="w-full mt-2 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-medium"
-              >
-                Apply Filters
-              </button>
             </div>
-          )}
 
-          {/* Desktop Filters */}
-          <div className="hidden md:block space-y-3">
-            {/* Category Filters */}
-            <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-hide">
-              {categories.map(category => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg whitespace-nowrap transition-all text-sm font-medium ${
-                    selectedCategory === category.id
-                      ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/25'
-                      : 'bg-white/5 backdrop-blur-md text-white/60 hover:bg-white/10 hover:text-white/80 border border-white/10'
-                  }`}
-                >
-                  <span className="text-sm">{category.icon}</span>
-                  <span>{category.name}</span>
+            <h3 className="text-xl font-bold mt-8">Recent Transactions</h3>
+            <div className="space-y-3">
+              {vendorTransactions.length === 0 ? (
+                <div className="text-gray-500 text-center py-8">No transaction history found.</div>
+              ) : (
+                vendorTransactions.map(tx => (
+                  <div key={tx.id} className="bg-gray-800/40 p-4 rounded-xl border border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 hover:bg-gray-800/60 transition-colors">
+                    <div className="flex items-center gap-4 w-full md:w-auto">
+                      <div className={`p-3 rounded-full flex-shrink-0 ${tx.status === 'Paid' ? 'bg-green-500/20 text-green-500' : 'bg-orange-500/20 text-orange-500'}`}>
+                        {tx.status === 'Paid' ? <CheckCircle size={20} /> : <Clock size={20} />}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-bold truncate">{tx.supplier}</div>
+                        <div className="text-sm text-gray-400 truncate">{tx.items}</div>
+                        {tx.status !== 'Paid' && <div className="text-xs text-red-400 mt-1">Due: {new Date(tx.dueDate).toLocaleDateString()}</div>}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                      <div className="text-right">
+                        <div className="font-bold text-lg">₹{tx.amount}</div>
+                        <div className={`text-xs font-bold uppercase ${tx.status === 'Overdue' ? 'text-red-400' : tx.status === 'Due' ? 'text-orange-400' : 'text-green-400'}`}>{tx.status}</div>
+                      </div>
+                      {tx.status !== 'Paid' && (
+                        <button
+                          onClick={() => handleVendorPay(tx.id)}
+                          className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-medium text-sm shadow-lg shadow-blue-600/20"
+                        >
+                          Pay
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        ) : (
+          /* ==============================================================================================
+                                        SUPPLIER VIEW
+             ============================================================================================== */
+          <>
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
+                  Credit Management
+                </h1>
+                <p className="text-gray-400">Track collections and manage vendor risk.</p>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={fetchData} className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 tooltip" title="Refresh">
+                  <RefreshCcw size={18} />
                 </button>
-              ))}
-            </div>
-
-            {/* Additional Filters */}
-            <div className="flex flex-wrap gap-3">
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500/50 focus:outline-none min-w-0"
-              >
-                {locations.map(location => (
-                  <option key={location.id} value={location.id} className="bg-gray-800 text-white">
-                    {location.name}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500/50 focus:outline-none min-w-0"
-              >
-                <option value="rating" className="bg-gray-800 text-white">Best Rated</option>
-                <option value="deliveryTime" className="bg-gray-800 text-white">Fastest</option>
-                <option value="minOrder" className="bg-gray-800 text-white">Low Order</option>
-              </select>
-
-              <div className="flex items-center gap-2 text-white/50 text-sm ml-auto bg-white/5 backdrop-blur-md px-3 py-2 rounded-lg border border-white/10">
-                <Filter size={14} />
-                <span>{filteredSuppliers.length} results</span>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Suppliers Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {sortedSuppliers.map(supplier => (
-            <SupplierCard key={supplier.id} supplier={supplier} />
-          ))}
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gray-800 p-6 rounded-2xl border border-white/10">
+                <div className="text-gray-400 text-sm">Total Market Receivables</div>
+                <div className="text-3xl font-bold text-white mt-2">₹{totalReceivables.toLocaleString()}</div>
+              </div>
+              <div className="bg-gray-800 p-6 rounded-2xl border border-white/10">
+                <div className="text-gray-400 text-sm">Active Credit Vendors</div>
+                <div className="text-3xl font-bold text-white mt-2">{activeVendors}</div>
+              </div>
+              <div className="bg-gray-800 p-6 rounded-2xl border border-red-500/30 bg-red-500/5">
+                <div className="text-red-300 text-sm">Risk Assessment</div>
+                <div className="text-xl font-bold text-red-500 mt-2">
+                  {vendorDebts.filter(v => v.trustScore < 400).length} High Risk
+                </div>
+                <div className="text-red-400 text-xs mt-1">Vendors with Low Trust Score</div>
+              </div>
+            </div>
 
-        {/* No Results */}
-        {sortedSuppliers.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-4xl mb-3">🔍</div>
-            <h3 className="text-lg font-semibold text-white mb-1">No suppliers found</h3>
-            <p className="text-white/50 text-sm">Try adjusting your search or filters</p>
-          </div>
+            <h3 className="text-xl font-bold mt-8">Vendor Credit List</h3>
+            <div className="space-y-3">
+              {vendorDebts.length === 0 ? (
+                <div className="text-center py-10 text-gray-500">No active debts found.</div>
+              ) : (
+                vendorDebts.map(vendor => (
+                  <div key={vendor.id} className="bg-gray-800/40 p-4 rounded-xl border border-white/5 hover:bg-gray-800 transition-colors flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg border-2 ${vendor.trustScore > 750 ? 'border-green-500/50 bg-green-500/20 text-green-500' :
+                          vendor.trustScore > 500 ? 'border-yellow-500/50 bg-yellow-500/20 text-yellow-500' : 'border-red-500/50 bg-red-500/20 text-red-500'
+                        }`}>
+                        {vendor.trustScore}
+                      </div>
+                      <div>
+                        <div className="font-bold text-lg">{vendor.name}</div>
+                        <div className="text-sm text-gray-400 flex items-center gap-2">
+                          <Phone size={12} /> {vendor.phone}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-right min-w-[120px]">
+                      <div className="text-gray-400 text-xs">Total Due</div>
+                      <div className={`text-xl font-bold ${vendor.due > 0 ? 'text-white' : 'text-gray-500'}`}>
+                        ₹{vendor.due.toLocaleString()}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      {vendor.due > 0 ? (
+                        <button onClick={() => handleSendReminder(vendor.id)} className="flex items-center gap-2 px-4 py-2 bg-green-600/20 text-green-500 hover:bg-green-600/30 rounded-lg transition-colors border border-green-600/30">
+                          <Send size={16} /> Remind
+                        </button>
+                      ) : (
+                        <span className="text-green-500 font-bold px-4 flex items-center gap-1">
+                          <CheckCircle size={16} /> Paid
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
         )}
-      </div>
 
-      {/* Gradient overlay */}
-      <div className="fixed bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-gray-900 to-transparent pointer-events-none z-20" />
+      </div>
     </div>
   );
 };
