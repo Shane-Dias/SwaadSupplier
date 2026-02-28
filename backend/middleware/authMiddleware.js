@@ -1,6 +1,33 @@
 import jwt from "jsonwebtoken";
 import Supplier from "../models/supplier.js"
-// import Supplier from "../models/Supplier";
+
+// Generic protect middleware (for any authenticated user)
+export const protect = async (req, res, next) => {
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    try {
+      token = req.headers.authorization.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      // Just attach the decoded ID, let specific controllers handle role checks if needed
+      // Or fetch user if you have a User model. For now, we trust the token.
+      req.user = decoded;
+
+      next();
+    } catch (error) {
+      console.error(error);
+      res.status(401).json({ message: "Not authorized, token failed" });
+    }
+  }
+
+  if (!token) {
+    res.status(401).json({ message: "Not authorized, no token" });
+  }
+};
 
 export const protectSupplier = async (req, res, next) => {
   try {

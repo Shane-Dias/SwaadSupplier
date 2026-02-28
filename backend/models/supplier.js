@@ -39,6 +39,14 @@ const supplierSchema = new mongoose.Schema(
       type: String,
       default: "supplier",
     },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    reviewCount: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

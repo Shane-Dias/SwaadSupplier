@@ -26,10 +26,17 @@ const vendorSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  
   role: {
     type: String,
     default: 'vendor'
+  },
+  trustScore: {
+    type: Number,
+    default: 500
+  },
+  creditLimit: {
+    type: Number,
+    default: 20000
   }
 }, { timestamps: true });
 

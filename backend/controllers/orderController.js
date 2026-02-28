@@ -262,13 +262,35 @@ export const updateOrderStatus = async (req, res) => {
         </div>
       `;
 
-      await sendEmail({
-        to: order.vendor.email,
-        subject: emailSubject,
-        html: emailHtml
-      });
+      console.log(`[DEBUG] Order status is delivered. Preparing email for: ${order.vendor.email}`);
 
-      console.log(`📧 Delivery email sent to ${order.vendor.email}`);
+      if (!order.vendor.email) {
+        console.error('[ERROR] Vendor email not found in order data');
+      } else {
+        const emailSent = await sendEmail({
+          to: order.vendor.email,
+          subject: `Order Delivered - ${order._id.toString().slice(-6).toUpperCase()}`,
+          html: `
+              <h2>Your Order is Delivered 🎉</h2>
+              <p>Hello ${order.vendor.name},</p>
+              <p>Your order has been delivered successfully by 
+              <strong>${order.supplier.shopName}</strong>.</p>
+  
+              <p><b>Order ID:</b> ${order._id.toString().slice(-6).toUpperCase()}</p>
+              <p><b>Total:</b> ₹${order.totalAmount}</p>
+
+              <br/>
+              <p>If you have any issues, reply to this email to contact the supplier.</p>
+            `,
+          replyTo: order.supplier.email // Reply-To set to Supplier
+        });
+
+        if (emailSent) {
+          console.log(`✅ Delivery email successfully sent to ${order.vendor.email}`);
+        } else {
+          console.error(`❌ Failed to send delivery email to ${order.vendor.email}`);
+        }
+      }
     }
 
     res

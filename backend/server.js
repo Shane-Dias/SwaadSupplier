@@ -7,6 +7,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
 import itemRoutes from "./routes/itemRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
+import creditRoutes from "./routes/credit.js";
 
 // Configure dotenv
 dotenv.config();
@@ -49,6 +51,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/items", itemRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/credit", creditRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

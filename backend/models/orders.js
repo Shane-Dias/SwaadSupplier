@@ -28,6 +28,12 @@ const orderSchema = new mongoose.Schema({
     default: "pending",
   },
   orderedAt: { type: Date, default: Date.now },
+  paymentStatus: {
+    type: String,
+    enum: ["unpaid", "paid", "overdue"],
+    default: "unpaid",
+  },
+  dueDate: { type: Date }
 });
 
 export default mongoose.model("Order", orderSchema);
