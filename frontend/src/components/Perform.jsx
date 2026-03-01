@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 
 const savingsData = [
@@ -22,8 +21,8 @@ const growthData = [
 
 const SavingsChart = () => {
   return (
-    <div className="bg-gray-800/30 border border-white/5 rounded-xl p-6 backdrop-blur-sm">
-      <h3 className="text-xl font-medium text-white mb-6">Cost Comparison Analysis</h3>
+    <div className="glass-card rounded-xl p-6">
+      <h3 className="text-xl font-semibold text-white mb-6">Cost comparison (₹/kg)</h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={savingsData}>
           <XAxis dataKey="month" stroke="#ccc" />
@@ -63,7 +62,7 @@ const GrowthMetrics = () => {
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: index * 0.1 }}
           viewport={{ once: true }}
-          className="bg-gray-800/40 border border-orange-500/20 rounded-lg p-4 text-center hover:border-orange-500/40 transition-colors duration-300"
+          className="glass-card border border-orange-500/15 rounded-lg p-4 text-center hover:border-orange-500/40 transition-colors duration-300"
         >
           <div className="text-2xl font-bold text-orange-400 mb-1">
             {item.metric === 'Savings' ? `₹${(item.count / 1000).toFixed(0)}K` : item.count}
@@ -78,18 +77,20 @@ const GrowthMetrics = () => {
 
 const PerformanceSection = () => {
   return (
-    <section className="py-20 bg-gray-900 relative">
-      <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 to-red-500/5" />
+    <section className="py-20 bg-gray-900 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-r from-orange-500/7 to-red-500/7" />
+      <div className="absolute top-10 right-10 w-56 h-56 bg-orange-500/10 blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-red-500/10 blur-3xl" />
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-14"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Proven Cost Savings & Growth</h2>
-          <p className="text-white/60 max-w-2xl mx-auto">Our platform consistently delivers significant cost savings to street food vendors while building a thriving community.</p>
+          <p className="text-white/65 max-w-3xl mx-auto">Predictable supply, measurable savings, and happier vendors and suppliers—backed by live data, not claims.</p>
         </motion.div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -159,7 +160,7 @@ const PerformanceSection = () => {
           viewport={{ once: true }}
           className="mt-16 text-center"
         >
-          <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/20 rounded-2xl p-8">
+          <div className="glass-card border border-orange-500/20 rounded-2xl p-8">
             <h3 className="text-2xl font-bold text-white mb-4">Platform Impact</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div>

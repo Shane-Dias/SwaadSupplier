@@ -72,10 +72,8 @@ const TestimonialsSection = () => {
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/20 to-transparent" />
       
-      <div className="absolute top-10 right-10 w-64 h-64 rounded-full bg-orange-500/10 blur-3xl animate-pulse" 
-           style={{animationDuration: '15s'}} />
-      <div className="absolute bottom-20 left-20 w-48 h-48 rounded-full bg-red-500/10 blur-3xl animate-pulse" 
-           style={{animationDuration: '20s'}} />
+       <div className="absolute top-10 right-10 w-64 h-64 rounded-full bg-orange-500/12 blur-3xl" />
+       <div className="absolute bottom-20 left-20 w-48 h-48 rounded-full bg-red-500/12 blur-3xl" />
       
       {/* Subtle grid background */}
       <div className="absolute inset-0 bg-grid-white/[0.025] bg-[length:50px_50px]" />
@@ -84,18 +82,18 @@ const TestimonialsSection = () => {
         <div className={`text-center mb-10 transition-all duration-1000 transform ${
           isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
-          <span className="inline-block py-1 px-3 rounded-full bg-orange-500/10 text-orange-400 text-xs font-medium mb-3">
-            🍜 Vendor Stories
+          <span className="inline-block py-1 px-3 rounded-full bg-white/5 border border-white/10 text-orange-300 text-xs font-medium mb-3">
+            🍜 Vendor stories
           </span>
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">Success Stories from Our Vendors</h2>
-          <p className="text-white/60 max-w-xl mx-auto text-sm">Real experiences from street food vendors who transformed their business with StreetSource.</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">Proof from the street</h2>
+          <p className="text-white/65 max-w-xl mx-auto text-sm">How vendors and suppliers cut trips, reduce waste, and keep stalls running smoothly.</p>
         </div>
         
         <div className={`max-w-4xl mx-auto relative transition-all duration-1000 transform ${
           isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'
         }`} style={{ transitionDelay: '300ms' }}>
           {/* Main card with dynamic glow effect based on active testimonial */}
-          <div className="relative bg-gray-800/40 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-xl border border-white/5 overflow-hidden">
+          <div className="relative glass-card rounded-xl p-6 md:p-8 shadow-xl border border-white/8 overflow-hidden">
             {/* Dynamic glow effect that changes with each testimonial */}
             <div className={`absolute inset-0 bg-gradient-to-br ${testimonials[activeIndex].glowColor} opacity-30 blur-xl`} />
             <div className="absolute inset-0 bg-black/50" />
@@ -174,7 +172,7 @@ const TestimonialsSection = () => {
             <div className="relative group overflow-hidden">
               {/* Orange glow effect */}
               <div className="absolute -inset-1 bg-gradient-to-r from-orange-600/30 to-red-400/30 blur-sm opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative bg-gray-800/60 backdrop-blur-sm rounded-lg p-3 border border-white/5 shadow-lg group-hover:border-orange-500/20 transition-all duration-500">
+              <div className="relative glass-card rounded-lg p-3 border border-white/5 shadow-lg group-hover:border-orange-500/20 transition-all duration-500">
                 <div className="text-lg font-bold text-white">4.8⭐</div>
                 <div className="text-white/60 text-xs">Average Rating</div>
               </div>
@@ -183,7 +181,7 @@ const TestimonialsSection = () => {
             <div className="relative group overflow-hidden">
               {/* Green glow effect */}
               <div className="absolute -inset-1 bg-gradient-to-r from-green-600/30 to-emerald-400/30 blur-sm opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative bg-gray-800/60 backdrop-blur-sm rounded-lg p-3 border border-white/5 shadow-lg group-hover:border-green-500/20 transition-all duration-500">
+              <div className="relative glass-card rounded-lg p-3 border border-white/5 shadow-lg group-hover:border-green-500/20 transition-all duration-500">
                 <div className="text-lg font-bold text-white">500+</div>
                 <div className="text-white/60 text-xs">Happy Vendors</div>
               </div>
@@ -192,7 +190,7 @@ const TestimonialsSection = () => {
             <div className="relative group overflow-hidden">
               {/* Purple glow effect */}
               <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/30 to-violet-400/30 blur-sm opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative bg-gray-800/60 backdrop-blur-sm rounded-lg p-3 border border-white/5 shadow-lg group-hover:border-purple-500/20 transition-all duration-500">
+              <div className="relative glass-card rounded-lg p-3 border border-white/5 shadow-lg group-hover:border-purple-500/20 transition-all duration-500">
                 <div className="text-lg font-bold text-white">35%</div>
                 <div className="text-white/60 text-xs">Cost Savings</div>
               </div>

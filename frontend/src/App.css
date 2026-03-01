@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+
+:root {
+	--bg: #0b0f19;
+	--card: #111827;
+	--border: rgba(255, 255, 255, 0.06);
+	--muted: #9ca3af;
+	--accent: #f97316;
+}
+
+* {
+	scroll-behavior: smooth;
+}
+
+body {
+	margin: 0;
+	background: radial-gradient(circle at 20% 20%, rgba(249, 115, 22, 0.08), transparent 35%),
+		radial-gradient(circle at 80% 0%, rgba(248, 113, 113, 0.08), transparent 25%),
+		var(--bg);
+	color: #e5e7eb;
+	font-family: 'Manrope', 'Segoe UI', sans-serif;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+}
+
+a {
+	text-decoration: none;
+}
+
+.glass-card {
+	background: linear-gradient(145deg, rgba(17, 24, 39, 0.9), rgba(15, 23, 42, 0.75));
+	border: 1px solid var(--border);
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+	backdrop-filter: blur(12px);
+}
+
+.soft-shadow {
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+}

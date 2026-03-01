@@ -28,10 +28,10 @@ const FeatureCard = ({ glowColor, icon, title, description }) => {
   }, []);
 
   return (
-    <div 
+    <div
       ref={cardRef}
-      className={`bg-gray-800/50 backdrop-blur-sm border border-white/5 rounded-xl p-6 transition-all duration-1000 transform relative overflow-hidden ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      className={`glass-card rounded-xl p-6 transition-all duration-800 transform relative overflow-hidden ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -42,7 +42,7 @@ const FeatureCard = ({ glowColor, icon, title, description }) => {
       }}
     >
       {/* Subtle glow effect in the background */}
-      <div 
+      <div
         className="absolute -inset-1 rounded-xl opacity-30 blur-xl transition-opacity duration-500"
         style={{ 
           background: `radial-gradient(circle at 50% 50%, ${activeGlowColor} 0%, transparent 70%)`,
@@ -70,15 +70,18 @@ const FeatureCard = ({ glowColor, icon, title, description }) => {
 
 const FeaturesSection = () => {
   return (
-    <section className="py-20 bg-gray-900 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/5 to-transparent" />
-      
+    <section className="py-20 bg-gray-900 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/8 to-transparent" />
+      <div className="absolute -left-10 top-20 w-64 h-64 bg-orange-500/10 blur-3xl" />
+      <div className="absolute right-0 bottom-10 w-72 h-72 bg-red-500/10 blur-3xl" />
+
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Why Choose StreetSource</h2>
-          <p className="text-white/60 max-w-2xl mx-auto">Connecting street food vendors with trusted suppliers for quality ingredients at competitive prices.</p>
+        <div className="text-center mb-14">
+          <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-orange-300 uppercase tracking-[0.2em]">Why vendors stay</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mt-4 mb-3">Operational wins in one place</h2>
+          <p className="text-white/65 max-w-3xl mx-auto">Reliable supply, predictable costs, and tools that keep both vendors and suppliers in sync.</p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <FeatureCard
             glowColor="rgba(249, 115, 22, 0.5)" // Orange glow
@@ -99,7 +102,7 @@ const FeaturesSection = () => {
               </svg>
             }
             title="Best Prices"
-            description="Compare prices from multiple suppliers and access bulk buying discounts for better margins."
+            description="Compare live quotes and unlock bulk savings without phone calls or haggling."
           />
           
           <FeatureCard
@@ -110,7 +113,7 @@ const FeaturesSection = () => {
               </svg>
             }
             title="Quality Assurance"
-            description="Access fresh, quality ingredients with transparent sourcing and quality certification."
+            description="Freshness, hygiene, and certificates surfaced up front to cut uncertainty."
           />
           
           <FeatureCard
@@ -121,7 +124,7 @@ const FeaturesSection = () => {
               </svg>
             }
             title="Group Ordering"
-            description="Join with nearby vendors for bulk orders to get better prices and share delivery costs."
+            description="Coordinate bulk orders with nearby vendors to share delivery costs and improve margins."
           />
           
           <FeatureCard
@@ -132,7 +135,7 @@ const FeaturesSection = () => {
               </svg>
             }
             title="Fast Delivery"
-            description="Quick and reliable delivery network designed for the fast-paced street food business."
+            description="Service-level awareness and proactive alerts keep perishables moving on time."
           />
           
           <FeatureCard
@@ -143,9 +146,10 @@ const FeaturesSection = () => {
               </svg>
             }
             title="Inventory Management"
-            description="Track your supplies, set reorder alerts, and manage your inventory efficiently through our platform."
+            description="Reorder nudges, low-stock highlights, and simple stock edits without leaving the flow."
           />
         </div>
+        <div className="mt-10 text-center text-sm text-white/50">Built for busy hours: minimal clicks, clear status, fewer surprises.</div>
       </div>
     </section>
   );

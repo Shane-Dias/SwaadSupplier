@@ -24,24 +24,24 @@ const StreetFoodLandingPage = () => {
 
   // Staggered animations for content
   useEffect(() => {
-    // Staggered animations
+    // Faster stagger so first paint feels snappy
     const timers = [
-      setTimeout(() => setIsVisible((prev) => ({ ...prev, badge: true })), 300),
+      setTimeout(() => setIsVisible((prev) => ({ ...prev, badge: true })), 150),
       setTimeout(
         () => setIsVisible((prev) => ({ ...prev, heading1: true })),
-        800
+        400
       ),
       setTimeout(
         () => setIsVisible((prev) => ({ ...prev, heading2: true })),
-        1300
+        700
       ),
       setTimeout(
         () => setIsVisible((prev) => ({ ...prev, subtitle: true })),
-        1800
+        950
       ),
       setTimeout(
         () => setIsVisible((prev) => ({ ...prev, buttons: true })),
-        2300
+        1200
       ),
     ];
 
@@ -135,7 +135,7 @@ const StreetFoodLandingPage = () => {
     <div className="min-h-screen w-full flex items-center justify-center overflow-hidden bg-gray-900 relative">
       {/* Particles.js floating elements background */}
       {init && (
-        <Particles className="absolute inset-0" options={particlesOptions} />
+        <Particles className="absolute inset-0 opacity-70" options={particlesOptions} />
       )}
 
       {/* Gradient backgrounds */}
@@ -157,7 +157,7 @@ const StreetFoodLandingPage = () => {
           >
             <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
             <span className="text-sm text-orange-200/80 tracking-wide font-medium">
-              🍜 Street Food Solutions
+              🍜 Designed for vendors & suppliers
             </span>
           </div>
 
@@ -183,12 +183,11 @@ const StreetFoodLandingPage = () => {
 
           {/* Subtitle */}
           <p
-            className={`text-base sm:text-lg md:text-xl text-white/60 mb-10 leading-relaxed font-light tracking-wide max-w-2xl mx-auto px-4 ${fadeClass(
+            className={`text-base sm:text-lg md:text-xl text-white/70 mb-10 leading-relaxed font-light tracking-wide max-w-3xl mx-auto px-4 ${fadeClass(
               "subtitle"
             )}`}
           >
-            The ultimate platform connecting street food vendors with trusted suppliers. 
-            Get quality ingredients at the best prices, delivered fast to keep your business thriving.
+            Source smarter with transparent pricing, verified partners, and AI-assisted ordering that keeps street food operations moving without friction.
           </p>
 
           {/* Call to action buttons */}
@@ -197,36 +196,49 @@ const StreetFoodLandingPage = () => {
               "buttons"
             )}`}
           >
-            <a href="/signup">
-              <button className="px-8 py-4 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                Join as Vendor
+            <a href="/login">
+              <button className="px-8 py-4 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-orange-500/40">
+                Vendor / Supplier Login
               </button>
             </a>
             <a href="/signup">
-              <button className="px-8 py-4 rounded-lg bg-transparent border-2 border-orange-500/30 hover:bg-orange-500/10 hover:border-orange-500/50 text-orange-200 font-semibold transition-all duration-300">
-                Become Supplier
+              <button className="px-8 py-4 rounded-lg bg-gray-800 border border-orange-500/30 hover:bg-orange-500/10 hover:border-orange-500/50 text-orange-200 font-semibold transition-all duration-300">
+                Create a free account
               </button>
             </a>
           </div>
 
           {/* Quick stats or features preview */}
           <div
-            className={`mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto ${fadeClass(
+            className={`mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto ${fadeClass(
               "buttons"
             )}`}
           >
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-400 mb-1">500+</div>
-              <div className="text-sm text-white/50">Active Vendors</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-400 mb-1">50+</div>
-              <div className="text-sm text-white/50">Trusted Suppliers</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-400 mb-1">₹2L+</div>
-              <div className="text-sm text-white/50">Savings Generated</div>
-            </div>
+            {[{
+              label: "Active vendors",
+              value: "500+",
+              detail: "with verified KYC"
+            },{
+              label: "Trusted suppliers",
+              value: "50+",
+              detail: "with live stock & SLAs"
+            },{
+              label: "Avg. savings",
+              value: "35%",
+              detail: "vs. market price"
+            }].map((stat) => (
+              <div key={stat.label} className="glass-card rounded-xl p-5 text-left border border-orange-500/10">
+                <div className="text-sm text-white/60 mb-2">{stat.label}</div>
+                <div className="text-2xl font-bold text-orange-300">{stat.value}</div>
+                <div className="text-xs text-white/50 mt-1">{stat.detail}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className={`mt-6 flex flex-wrap justify-center gap-3 text-xs text-white/60 ${fadeClass("buttons")}`}>
+            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10">Fast onboarding</span>
+            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10">Transparent pricing</span>
+            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10">Support in English & Hindi</span>
           </div>
         </div>
       </div>
